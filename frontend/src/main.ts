@@ -1,14 +1,11 @@
 import app from '@/app';
-import router from '@/router.ts'
+import router from './router';
 import { createPinia } from 'pinia'
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate';
 
 import 'flowbite';
-import '@/assets/styles/tailwind.css';
-import './assets/styles/main.scss'
+import './assets/scss/base.scss'
 import VueDatePicker from '@vuepic/vue-datepicker';
-import '@vuepic/vue-datepicker/dist/main.css'
-
 
 const pinia = createPinia();
 pinia.use(piniaPluginPersistedstate);

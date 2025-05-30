@@ -6,6 +6,10 @@ import DefaultLayout from './views/layouts/DefaultLayout.vue'
 import LoginPage from "@/views/pages/no-layout/LoginPage.vue";
 import IndexPage from "@/views/pages/default-layout/IndexPage.vue";
 import AclManager from "@/AclManager.ts";
+import UI from './views/pages/default-layout/UI.vue';
+import ClientsPage from './views/pages/default-layout/ClientsPage.vue';
+import ServicesPage from './views/pages/default-layout/ServicesPage.vue';
+import BillingPage from './views/pages/default-layout/BillingPage.vue';
 
 export const routes: RouteRecordRaw[] = [
   {
@@ -39,6 +43,30 @@ export const routes: RouteRecordRaw[] = [
             name: 'index-page',
             component: IndexPage,
             meta: { logged: true }
+          },
+          {
+            path: 'UI',
+            name: 'ui-page',
+            component: UI,
+            meta: { logged: true }
+          },
+          {
+            path: 'clients',
+            name: 'client-page',
+            component: ClientsPage,
+            meta: { logged: true }
+          },
+          {
+            path: 'services',
+            name: 'service-page',
+            component: ServicesPage,
+            meta: { logged: true }
+          },
+          {
+            path: 'billings',
+            name: 'billing-page',
+            component: BillingPage,
+            meta: { logged: true }
           }
         ]
       }
@@ -64,14 +92,14 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   // @ts-ignore
-  const {isAllow, redirectRouteName, params} = AclManager.hasPermission(to.meta.logged)
+  const { isAllow, redirectRouteName, params } = AclManager.hasPermission(to.meta.logged)
   console.log('Route Guard:', to.name, 'isAllow:', isAllow, 'redirectRouteName:', redirectRouteName, 'params:', params);
   if (isAllow) {
     next();
   } else {
     if (params) {
       // @ts-ignore
-      next({ name: redirectRouteName, params: params});
+      next({ name: redirectRouteName, params: params });
     } else {
       next({ name: redirectRouteName });
     }
