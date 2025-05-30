@@ -1,0 +1,112 @@
+.dp__theme_light {
+    --dp-primary-color: #b13326 !important;
+}
+
+* {
+    font-family: Poppins;
+}
+
+.alert {
+    align-items: center;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    font-size: 0.875rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+}
+
+.alert-reason {
+
+}
+
+.alert span {
+    font-weight: 600;
+}
+
+.alert-info:hover {
+    background-color: #dbeafe;
+}
+.alert-info {
+    border: 1px solid #1e40af;
+    background-color: #eff6ff;
+    color: #1e40af;
+}
+
+.alert-danger {
+    border: 1px solid #991b1b;
+    background-color: #fef2f2;
+    color: #991b1b;
+}
+
+.alert-success {
+    border: 1px solid #065f46;
+    background-color: #ecfdf5;
+    color: #065f46;
+}
+
+.alert-warning {
+    border: 1px solid #92400e;
+    background-color: #fffbeb;
+    color: #92400e;
+}
+
+.alert-dark {
+    background-color: #f3f4f6;
+    color: #374151;
+}
+
+.router-active, .router-active:hover {
+    background-color: white;
+    color: black;
+
+    i {
+        color: black;
+    }
+}
+.cancel-router-active {
+    background-color: initial !important;
+    color: initial !important;
+}
+
+.text-2xs {
+    font-size: 10.5px;
+}
+
+.text-4xs {
+    font-size: 9px;
+}
+
+.text-5xs {
+    font-size: 8px;
+}
+
+.text-6xs {
+    font-size: 7px;
+}
+
+.tooltip-arrow {
+    width: 8px;
+    height: 8px;
+    background: inherit; /* hérite du bg de la tooltip (ici bg-gray-900) */
+    position: absolute;
+    transform: rotate(45deg);
+}
+
+.tooltip[data-popper-placement^="top"] > .tooltip-arrow {
+    bottom: -4px;
+    left: calc(50% - 4px);
+}
+
+/* Pour d'autres positions, adaptez en conséquence : */
+.tooltip[data-popper-placement^="bottom"] > .tooltip-arrow {
+    top: -4px;
+    left: calc(50% - 4px);
+}
+.tooltip[data-popper-placement^="left"] > .tooltip-arrow {
+    right: -4px;
+    top: calc(50% - 4px);
+}
+.tooltip[data-popper-placement^="right"] > .tooltip-arrow {
+    left: -4px;
+    top: calc(50% - 4px);
+}

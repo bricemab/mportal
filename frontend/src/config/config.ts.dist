@@ -1,0 +1,18 @@
+const config = {
+  env: "development",
+  url: "http://localhost:5173",
+  isDevModeEnabled: true,
+  api: {
+    axiosRequestsTimeout: 30000,
+    endpoint: "http://localhost:3000/api",
+    hmacSecretKey: "hmacSecretKey",
+    secretKey: "jwtSecret",
+    jwt: {
+      name: "user-session", // change juste la key dans le localStorage
+    }
+  },
+}
+
+config.isDevModeEnabled = config.env === "development";
+
+export default config;
