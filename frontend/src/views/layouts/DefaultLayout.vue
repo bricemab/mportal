@@ -22,8 +22,11 @@ export default defineComponent({
     <TheNavigation />
     <div class="flex flex-col flex-1 space-y-6">
       <div class="flex justify-between items-center px-9 pt-3">
-        <h2 v-if="route.path === '/'" class="text-2xl font-semibold text-white">Bonjour Théo 👋</h2>
-        <div  v-else></div>
+        <h2 v-if="route.path === '/'" class="text-2xl font-semibold text-white flex items-center">
+          Bonjour Théo
+          <img src="../../assets/ressources/wave-hand.png" alt="👋" class="ml-2 w-6 h-6" />
+        </h2>
+        <div v-else></div>
         <div class="flex items-center gap-4">
           <UserProfile />
         </div>

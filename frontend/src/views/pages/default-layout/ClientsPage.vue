@@ -107,25 +107,13 @@ function handleCreateSubmit(newClient) {
           <td>{{ facture.tel }}</td>
           <td>{{ facture.email }}</td>
           <td class="space-x-3 text-lg">
-            <button
-              class="text-white hover:text-blue-500"
-              title="Voir les détails"
-              @click="openMoreInfoModal(facture)"
-            >
+            <button class="text-white hover:text-blue-500" title="Voir les détails" @click="openMoreInfoModal(facture)">
               <i class="bx bx-info-circle"></i>
             </button>
-            <button
-              class="text-white hover:text-yellow-500"
-              title="Modifier"
-              @click="openEditModal(facture)"
-            >
+            <button class="text-white hover:text-yellow-500" title="Modifier" @click="openEditModal(facture)">
               <i class="bx bxs-pencil"></i>
             </button>
-            <button
-              class="text-white hover:text-red-500"
-              title="Supprimer"
-              @click="openDeleteModal(facture)"
-            >
+            <button class="text-white hover:text-red-500" title="Supprimer" @click="openDeleteModal(facture)">
               <i class="bx bx-trash-alt"></i>
             </button>
           </td>
@@ -133,37 +121,15 @@ function handleCreateSubmit(newClient) {
       </tbody>
     </table>
 
-    <ThePagination
-      :items="factures"
-      v-model:modelValue="currentPage"
-      :itemsPerPage="8"
-      @update:pageItems="paginatedItems = $event"
-    />
+    <ThePagination :items="factures" v-model:modelValue="currentPage" :itemsPerPage="8"
+      @update:pageItems="paginatedItems = $event" />
 
-    <!-- Modals -->
-    <DeleteClientModal
-      :open="isDeleteOpen"
-      @close="isDeleteOpen = false"
-      @confirm="handleDeleteConfirm"
-    />
+    <DeleteClientModal :open="isDeleteOpen" @close="isDeleteOpen = false" @confirm="handleDeleteConfirm" />
 
-    <EditClientModal
-      :open="isEditOpen"
-      :data="selectedClient"
-      @close="isEditOpen = false"
-      @submit="handleEditSubmit"
-    />
+    <EditClientModal :open="isEditOpen" :data="selectedClient" @close="isEditOpen = false" @submit="handleEditSubmit" />
 
-    <MoreInfoClientModal
-      :open="isMoreInfoOpen"
-      :data="selectedClient"
-      @close="isMoreInfoOpen = false"
-    />
+    <MoreInfoClientModal :open="isMoreInfoOpen" :data="selectedClient" @close="isMoreInfoOpen = false" />
 
-    <CreateClientModal
-      :open="isCreateOpen"
-      @close="isCreateOpen = false"
-      @submit="handleCreateSubmit"
-    />
+    <CreateClientModal :open="isCreateOpen" @close="isCreateOpen = false" @submit="handleCreateSubmit" />
   </div>
 </template>
