@@ -22,52 +22,85 @@ const chartData = {
 const chartOptions = {
   responsive: true,
   maintainAspectRatio: false,
+  plugins: {
+    legend: {
+      display: false,
+    },
+  },
   scales: {
     y: {
       beginAtZero: false,
     },
   },
-}
+};
+
+const factures = ref([
+  {
+    id: 1,
+    nom: 'Facture rebranding',
+    client: 'Maxime Burri',
+    montant: 800,
+    date: '25/05/2025',
+    statut: 'Payée',
+  },
+  {
+    id: 2,
+    nom: 'Facture rebranding',
+    client: 'Maxime Burri',
+    montant: 800,
+    date: '25/05/2025',
+    statut: 'Impayée',
+  },
+  {
+    id: 3,
+    nom: 'Facture rebranding',
+    client: 'Maxime Burri',
+    montant: 800,
+    date: '25/05/2025',
+    statut: 'Payée',
+  },
+])
+
 </script>
 
 <template>
-  <div class="text-white space-y-6">
+  <div class="space-y-10 mb-5">
     <!-- Stats top -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
       <div class="bg-lightBlack p-6 rounded-xl flex items-center gap-4">
-        <div class="bg-white w-12 h-12 flex items-center justify-center rounded-full">
+        <div class="bg-white w-15 h-15 flex items-center justify-center rounded-full">
           <i class='bx bx-group text-2xl text-black'></i>
         </div>
         <div>
           <p class="text-sm">Total de clients</p>
-          <p class="text-2xl font-bold">10</p>
+          <h1>10</h1>
         </div>
       </div>
       <div class="bg-lightBlack p-6 rounded-xl flex items-center gap-4">
-        <div class="bg-white w-12 h-12 flex items-center justify-center rounded-full">
+        <div class="bg-white w-15 h-15 flex items-center justify-center rounded-full">
           <i class='bx bx-group text-2xl text-black'></i>
         </div>
         <div>
-          <p class="text-sm">Total de clients</p>
-          <p class="text-2xl font-bold">10</p>
+          <p class="text-sm">Nombre de services</p>
+          <h1>12</h1>
         </div>
       </div>
       <div class="bg-lightBlack p-6 rounded-xl flex items-center gap-4">
-        <div class="bg-white w-12 h-12 flex items-center justify-center rounded-full">
+        <div class="bg-white w-15 h-15 flex items-center justify-center rounded-full">
           <i class='bx bx-group text-2xl text-black'></i>
         </div>
         <div>
-          <p class="text-sm">Total de clients</p>
-          <p class="text-2xl font-bold">10</p>
+          <p class="text-sm">Facture générées</p>
+          <h1>189</h1>
         </div>
       </div>
     </div>
 
     <!-- Chart -->
-    <div class="bg-lightBlack p-4 rounded-xl overflow-x-auto">
+    <div class="bg-lightBlack p-8 rounded-xl overflow-x-auto">
       <div class="flex justify-between items-center mb-4">
         <h3 class="font-semibold">Évolutions du CA</h3>
-        <select class="bg-lightBlack border border-white rounded-md text-sm px-2 py-1">
+        <select class="bg-lightBlack rounded-md text-sm px-2 py-1">
           <option>8 derniers mois</option>
           <option>6 derniers mois</option>
         </select>
@@ -77,33 +110,41 @@ const chartOptions = {
       </div>
     </div>
 
-    <!-- Highlights -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-      <div class="bg-lightBlack p-4 rounded-xl">
-        <p class="text-sm text-white/70">Meilleur mois</p>
+      <div class="bg-lightBlack p-6 rounded-xl">
+        <h4 class="mb-4">Meilleur mois</h4>
         <p class="text-xl font-semibold">Novembre</p>
         <p class="text-sm">2024</p>
 
       </div>
-      <div class="bg-lightBlack p-4 rounded-xl">
-        <p class="text-sm text-white/70">Meilleur année</p>
+      <div class="bg-lightBlack p-6 rounded-xl">
+        <h4 class="mb-4">Meilleur année</h4>
         <p class="text-xl font-semibold">2024</p>
         <p class="text-sm">96K de revenus</p>
       </div>
-      <div class="bg-lightBlack p-4 rounded-xl">
-        <p class="text-sm text-white/70">Meilleur client</p>
+      <div class="bg-lightBlack p-6 rounded-xl">
+        <h4 class="mb-4">Meilleur client</h4>
         <p class="text-xl font-semibold">Aude Veillon</p>
         <p class="text-sm">La Maison du Yoga</p>
       </div>
     </div>
 
     <!-- Table -->
-    <div class="bg-lightBlack p-4 rounded-xl">
-      <h3 class="font-semibold mb-2">Dernières factures générées</h3>
+    <div class="bg-lightBlack p-6 rounded-xl">
+      <div class="mb-5 flex justify-between items-center">
+        <div>
+          <h3 class="font-semibold mb-1">Dernières factures générées</h3>
+          <p class="text-sm">Factures ouvertes & fermées</p>
+        </div>
+        <button class="btn btn-primary flex items-center">
+          <i class='bx bx-plus pr-2'></i>
+          Voir plus
+        </button>
+      </div>
       <table class="w-full text-sm">
         <thead>
-          <tr class="text-left border-b border-white/20">
-            <th class="py-2">Nom de la facture</th>
+          <tr class="text-left border-b border-white">
+            <th class="py-5">Nom de la facture</th>
             <th>Client</th>
             <th>Montant</th>
             <th>Date</th>
@@ -111,16 +152,18 @@ const chartOptions = {
           </tr>
         </thead>
         <tbody>
-          <tr v-for="i in 3" :key="i" class="border-b border-white/10">
-            <td class="py-2">Lorem Ipsum...</td>
-            <td>Maxime Burri</td>
-            <td>800.-</td>
-            <td>28/05/2025</td>
+          <tr v-for="facture in factures" :key="facture.id" class="border-b border-white py-2">
+            <td class="py-5">{{ facture.nom }}</td>
+            <td>{{ facture.client }}</td>
+            <td>{{ facture.montant }}.-</td>
+            <td>{{ facture.date }}</td>
             <td>
               <span :class="[
-                i === 2 ? 'bg-red-600' : 'bg-green-600',
-                'text-white text-xs px-2 py-1 rounded-full'
-              ]">{{ i === 2 ? 'Impayée' : 'Payé' }}</span>
+                facture.statut === 'Impayée' ? 'bg-red-600 text-red-300' : 'bg-green-600 text-green-300',
+                'text-xs px-3 py-1 rounded-md'
+              ]">
+                {{ facture.statut }}
+              </span>
             </td>
           </tr>
         </tbody>
@@ -129,9 +172,4 @@ const chartOptions = {
   </div>
 </template>
 
-<style scoped>
-input:focus {
-  outline: none;
-  border-color: white;
-}
-</style>
+<style scoped></style>

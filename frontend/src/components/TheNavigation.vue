@@ -16,8 +16,8 @@ const route = useRoute()
 <template>
     <aside class="h-screen bg-black text-white transition-all duration-300 flex flex-col p-4 relative w-64">
 
-        <div class="flex items-center gap-2 mb-9 px-2">
-            <img src="../assets/ressources/logo.png" class="w-8 h-8" />
+        <div class="flex items-center  mb-9 px-2">
+            <img src="../assets/ressources/logo.svg" class="w-10 h-10" />
             <span class="text-2xl font-bold">MPortal</span>
         </div>
 

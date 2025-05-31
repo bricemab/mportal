@@ -8,7 +8,6 @@ export default {
 
 <template>
   <div>
-    no layout
     <router-view />
   </div>
 </template>
