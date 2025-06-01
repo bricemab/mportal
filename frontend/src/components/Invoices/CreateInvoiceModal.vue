@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import BaseModal from '../BaseModal.vue'
-import { ref, onMounted } from 'vue'
+import { ref, watch } from 'vue'
 import Utils from '@/utils/Utils.ts'
 import { toast } from 'vue3-toastify'
 import type { InvoiceType } from '@/types/InvoiceType.ts'
@@ -23,22 +23,37 @@ const services = ref<ServiceType[]>([])
 
 const fetchOptions = async () => {
   const [clientRes, serviceRes] = await Promise.all([
-    Utils.getFromBackend<ClientType[]>('/clients'),
-    Utils.getFromBackend<ServiceType[]>('/services'),
+    Utils.postEncodedToBackend<ClientType[]>('/clients'),
+    Utils.postEncodedToBackend<ServiceType[]>('/services'),
   ])
 
-  if (clientRes.success) clients.value = clientRes.data
-  if (serviceRes.success) services.value = serviceRes.data
+  if (clientRes.success) {
+    clients.value = clientRes.data
+  } else {
+    toast.error('Erreur lors du chargement des clients.')
+  }
+
+  if (serviceRes.success) {
+    services.value = serviceRes.data
+  } else {
+    toast.error('Erreur lors du chargement des services.')
+  }
 }
 
-onMounted(fetchOptions)
+watch(
+  () => props.open,
+  (isOpen) => {
+    if (isOpen) fetchOptions()
+  },
+  { immediate: true }
+)
 
 const onClose = () => emit('close')
 
 const onSubmit = async () => {
   const response = await Utils.postEncodedToBackend<{ invoice: InvoiceType }>(
     '/invoices/create',
-    invoice.value,
+    invoice.value
   )
   if (!response.success) {
     toast.error('Erreur lors de la création de la facture : ' + response.error.message)
@@ -56,6 +71,7 @@ const onSubmit = async () => {
 
       <select v-model="invoice.clientId" required class="custom-input">
         <option disabled value="0">Sélectionnez un client</option>
+        <option v-if="clients.length === 0" disabled>Aucun client disponible</option>
         <option v-for="client in clients" :key="client.id" :value="client.id">
           {{ client.firstname }} {{ client.lastname }} ({{ client.name }})
         </option>
@@ -63,13 +79,17 @@ const onSubmit = async () => {
 
       <select v-model="invoice.serviceId" required class="custom-input">
         <option disabled value="0">Sélectionnez un service</option>
+        <option v-if="services.length === 0" disabled>Aucun service disponible</option>
         <option v-for="service in services" :key="service.id" :value="service.id">
           {{ service.name }}
         </option>
       </select>
 
-      <input v-model.number="invoice.quantity" required placeholder="Quantité" class="custom-input" />
-      <input v-model.number="invoice.amount" required placeholder="Montant" class="custom-input" />
+      <input v-model.number="invoice.quantity" type="number" min="1" required placeholder="Quantité"
+        class="custom-input" />
+
+      <input v-model.number="invoice.amount" type="number" min="0" step="0.01" required placeholder="Montant"
+        class="custom-input" />
 
       <div class="flex justify-end space-x-3 pt-4">
         <button @click="onClose" type="button" class="btn btn-secondary">Annuler</button>
