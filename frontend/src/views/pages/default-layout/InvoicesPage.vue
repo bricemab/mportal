@@ -15,9 +15,9 @@ interface Invoice {
   id: number
   name: string
   amount: number
+  client: ClientType
   logs: InvoiceLogType[]
   services: InvoiceServiceType[]
-  client: ClientType
   createdAt: string
   updatedAt: string
 }

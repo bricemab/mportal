@@ -9,7 +9,7 @@ export class InvoiceLogEntity extends AbstractEntity {
   @Column({ name: "code", type: "varchar", nullable: false })
   code: InvoiceLogCode;
 
-  @Column({ name: "details", type: "varchar", nullable: false })
+  @Column({ name: "details", type: "varchar", nullable: true })
   details: string;
 
   // Relations

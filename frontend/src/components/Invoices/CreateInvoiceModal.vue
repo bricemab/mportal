@@ -23,8 +23,8 @@ const services = ref<ServiceType[]>([])
 
 const fetchOptions = async () => {
   const [clientRes, serviceRes] = await Promise.all([
-    Utils.postEncodedToBackend<ClientType[]>('/clients'),
-    Utils.postEncodedToBackend<ServiceType[]>('/services'),
+    Utils.postEncodedToBackend<{ clients: ClientType[] }>('/clients/list'),
+    Utils.postEncodedToBackend<{ services: ServiceType[] }>('/services/list'),
   ])
 
   if (clientRes.success) {
@@ -45,7 +45,7 @@ watch(
   (isOpen) => {
     if (isOpen) fetchOptions()
   },
-  { immediate: true }
+  { immediate: true },
 )
 
 const onClose = () => emit('close')
@@ -53,7 +53,7 @@ const onClose = () => emit('close')
 const onSubmit = async () => {
   const response = await Utils.postEncodedToBackend<{ invoice: InvoiceType }>(
     '/invoices/create',
-    invoice.value
+    invoice.value,
   )
   if (!response.success) {
     toast.error('Erreur lors de la création de la facture : ' + response.error.message)
@@ -72,7 +72,7 @@ const onSubmit = async () => {
       <select v-model="invoice.clientId" required class="custom-input">
         <option disabled value="0">Sélectionnez un client</option>
         <option v-if="clients.length === 0" disabled>Aucun client disponible</option>
-        <option v-for="client in clients" :key="client.id" :value="client.id">
+        <option v-for="client in clients as ClientType" :key="client.id" :value="client.id">
           {{ client.firstname }} {{ client.lastname }} ({{ client.name }})
         </option>
       </select>
@@ -85,11 +85,24 @@ const onSubmit = async () => {
         </option>
       </select>
 
-      <input v-model.number="invoice.quantity" type="number" min="1" required placeholder="Quantité"
-        class="custom-input" />
+      <input
+        v-model.number="invoice.quantity"
+        type="number"
+        min="1"
+        required
+        placeholder="Quantité"
+        class="custom-input"
+      />
 
-      <input v-model.number="invoice.amount" type="number" min="0" step="0.01" required placeholder="Montant"
-        class="custom-input" />
+      <input
+        v-model.number="invoice.amount"
+        type="number"
+        min="0"
+        step="0.01"
+        required
+        placeholder="Montant"
+        class="custom-input"
+      />
 
       <div class="flex justify-end space-x-3 pt-4">
         <button @click="onClose" type="button" class="btn btn-secondary">Annuler</button>

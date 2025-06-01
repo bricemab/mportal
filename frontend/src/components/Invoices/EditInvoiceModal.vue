@@ -15,15 +15,7 @@ const invoice = reactive({ ...props.data })
 const clients = ref<ClientType[]>([])
 const services = ref<ServiceType[]>([])
 
-const fetchOptions = async () => {
-  const [clientRes, serviceRes] = await Promise.all([
-    Utils.getFromBackend<ClientType[]>('/clients'),
-    Utils.getFromBackend<ServiceType[]>('/services'),
-  ])
-
-  if (clientRes.success) clients.value = clientRes.data
-  if (serviceRes.success) services.value = serviceRes.data
-}
+const fetchOptions = async () => {}
 
 onMounted(fetchOptions)
 
@@ -67,7 +59,12 @@ const onSubmit = async () => {
         </option>
       </select>
 
-      <input v-model.number="invoice.quantity" required placeholder="Quantité" class="custom-input" />
+      <input
+        v-model.number="invoice.quantity"
+        required
+        placeholder="Quantité"
+        class="custom-input"
+      />
       <input v-model.number="invoice.amount" required placeholder="Montant" class="custom-input" />
 
       <div class="flex justify-end space-x-3 pt-4">

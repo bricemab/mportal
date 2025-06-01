@@ -18,6 +18,7 @@ import AuthMiddleware from "./middlewares/AuthMiddleware";
 import { initializeDatabase } from "./database";
 import clientRouter from "./routes/ClientRouter";
 import serviceRouter from "./routes/ServiceRouter";
+import invoiceRouter from "./routes/InvoiceRouter";
 
 const app = express();
 
@@ -48,6 +49,7 @@ setup()
     app.use("/api/auth", authRouter);
     app.use("/api/clients", clientRouter);
     app.use("/api/services", serviceRouter);
+    app.use("/api/invoices", invoiceRouter);
 
     app.get("*", (req: Request, res: Response) => {
       res.json({ state: "Page doesn't exist" });
