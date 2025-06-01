@@ -31,7 +31,7 @@ const onSubmit = async () => {
 </script>
 
 <template>
-  <BaseModal :open="open" title="Créer un nouveau client" @close="onClose">
+  <BaseModal :open="open" title="Modifier le client" @close="onClose">
     <form @submit.prevent="onSubmit" class="space-y-3">
       <input v-model="client.lastname" required placeholder="Nom" class="custom-input" />
       <input v-model="client.firstname" required placeholder="Prénom" class="custom-input" />

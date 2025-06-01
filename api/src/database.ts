@@ -76,26 +76,39 @@ export class HistorySubscriber
       });
 
       if (Object.keys(changes).length > 0) {
-        // Saving an entity without changes will result in a change of 'updatedAt', but we don't want to save that in history
-        HistorySubscriber.saveHistory(
-          // No await : don't block the request for that
-          HistoryChangeType.UPDATE,
-          entity,
-          changes,
-        );
+        console.log("Changes detected", changes);
+        if (
+          Object.prototype.hasOwnProperty.call(changes, "archived") &&
+          changes.archived
+        ) {
+          HistorySubscriber.saveHistory(
+            // No await : don't block the request for that
+            HistoryChangeType.DELETE,
+            entity,
+            changes,
+          );
+        } else {
+          // Saving an entity without changes will result in a change of 'updatedAt', but we don't want to save that in history
+          HistorySubscriber.saveHistory(
+            // No await : don't block the request for that
+            HistoryChangeType.UPDATE,
+            entity,
+            changes,
+          );
+        }
       }
     }
   }
 
-  afterRemove(event: RemoveEvent<AbstractEntity>) {
-    console.log("After remove", event.databaseEntity.constructor.name);
-
-    HistorySubscriber.saveHistory(
-      // No await : don't block the request for that
-      HistoryChangeType.DELETE,
-      event.databaseEntity,
-    );
-  }
+  // afterRemove(event: RemoveEvent<AbstractEntity>) {
+  //   console.log("After remove", event.databaseEntity.constructor.name);
+  //
+  //   HistorySubscriber.saveHistory(
+  //     // No await : don't block the request for that
+  //     HistoryChangeType.DELETE,
+  //     event.databaseEntity,
+  //   );
+  // }
 
   /**
    * Insert entity changes in history tables

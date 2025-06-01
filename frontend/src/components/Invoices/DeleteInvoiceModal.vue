@@ -2,9 +2,10 @@
 import BaseModal from '../BaseModal.vue'
 import Utils from '@/utils/Utils.ts'
 import { toast } from 'vue3-toastify'
-import type { InvoiceType } from '@/types/InvoiceType.ts'
+import type { InvoicePage, InvoiceType } from '@/types/InvoiceType.ts'
+import InvoicesPage from '@/views/pages/default-layout/InvoicesPage.vue'
 
-const props = defineProps<{ open: boolean; data: InvoiceType }>()
+const props = defineProps<{ open: boolean; data: InvoicePage }>()
 const emit = defineEmits(['close', 'confirm'])
 
 const onClose = () => emit('close')
@@ -25,7 +26,7 @@ const onConfirm = async () => {
 <template>
   <BaseModal
     :open="open"
-    :title="'Êtes-vous sûr de vouloir supprimer la facture ' + data.name + ' ?'"
+    :title="'Êtes-vous sûr de vouloir supprimer la facture ' + data.number + ' ?'"
     description="Cette action est irréversible !"
     @close="onClose"
   >

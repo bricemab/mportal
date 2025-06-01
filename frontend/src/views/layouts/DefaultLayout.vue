@@ -4,6 +4,7 @@ import { useRoute } from 'vue-router'
 import TheNavigation from '@/components/TheNavigation.vue'
 import UserProfile from '@/components/UserProfile.vue'
 import { useUserStore } from '../../stores/user.ts'
+import Utils from '@/utils/Utils.ts'
 
 export default defineComponent({
   name: 'DefaultLayout',
@@ -14,6 +15,9 @@ export default defineComponent({
   },
   setup() {
     const route = useRoute()
+    setInterval(() => {
+      Utils.checkServerHealth()
+    }, 5000)
     return { route }
   },
 })

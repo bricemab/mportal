@@ -6,6 +6,8 @@ import { ClientEntity } from "../Client/ClientEntity";
 
 @Entity("invoice_log")
 export class InvoiceLogEntity extends AbstractEntity {
+  protected _keepHistory = false;
+
   @Column({ name: "code", type: "varchar", nullable: false })
   code: InvoiceLogCode;
 

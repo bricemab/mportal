@@ -8,82 +8,68 @@ import MoreInfoInvoiceModal from '@/components/Invoices/MoreInfoInvoiceModal.vue
 import CreateInvoiceModal from '@/components/Invoices/CreateInvoiceModal.vue'
 import type { ClientType } from '@/types/ClientType.ts'
 import Utils from '@/utils/Utils.ts'
-import type { InvoiceServiceType } from '@/types/InvoiceServiceType.ts'
-import type { InvoiceLogType } from '@/types/InvoiceLogType.ts'
+import { toast } from 'vue3-toastify'
+import type { InvoicePage } from '@/types/InvoiceType.ts'
+import dayjs from 'dayjs'
 
-interface Invoice {
-  id: number
-  name: string
-  amount: number
-  client: ClientType
-  logs: InvoiceLogType[]
-  services: InvoiceServiceType[]
-  createdAt: string
-  updatedAt: string
-}
-
-const invoices = ref<Invoice[]>([])
+const invoices = ref<InvoicePage[]>([])
 
 const currentPage = ref(1)
-const paginatedItems = ref<Invoice[]>([])
+const paginatedItems = ref<InvoicePage[]>([])
 
 const isDeleteOpen = ref(false)
 const isEditOpen = ref(false)
 const isMoreInfoOpen = ref(false)
 const isCreateOpen = ref(false)
 
-const selectedInvoice = ref<Invoice | null>(null)
+const selectedInvoice = ref<InvoicePage | null>(null)
 
 function openCreateModal() {
   selectedInvoice.value = null
   isCreateOpen.value = true
 }
 
-function openDeleteModal(invoice: Invoice) {
+function openDeleteModal(invoice: InvoicePage) {
   selectedInvoice.value = invoice
   isDeleteOpen.value = true
 }
 
-function openEditModal(invoice: Invoice) {
+function openEditModal(invoice: InvoicePage) {
   selectedInvoice.value = invoice
   isEditOpen.value = true
 }
 
-function openMoreInfoModal(invoice: Invoice) {
+function openMoreInfoModal(invoice: InvoicePage) {
   selectedInvoice.value = invoice
   isMoreInfoOpen.value = true
 }
 
-function handleDeleteConfirm() {
-  if (selectedInvoice.value) {
-    invoices.value = invoices.value.filter((c) => c.id !== selectedInvoice.value!.id)
-  }
+async function handleDeleteConfirm() {
+  await fetchList()
   isDeleteOpen.value = false
   selectedInvoice.value = null
 }
 
-function handleEditSubmit(updatedClient: ClientType) {
-  if (!updatedClient) return
-  const index = invoices.value.findIndex((c) => c.id === updatedClient.id)
-  if (index !== -1) {
-    invoices.value[index] = { ...updatedClient }
-  }
+async function handleEditSubmit(updatedClient: ClientType) {
+  await fetchList()
   isEditOpen.value = false
   selectedInvoice.value = null
 }
 
-function handleCreateSubmit(newClient: ClientType) {
-  if (!newClient) return
-  invoices.value.push(newClient)
+async function handleCreateSubmit(newClient: ClientType) {
   isCreateOpen.value = false
+  await fetchList()
 }
 
 const fetchList = async () => {
-  const response = await Utils.postEncodedToBackend<{ invoices: Invoice[] }>('/invoices/list', {})
+  const response = await Utils.postEncodedToBackend<{ invoices: InvoicePage[] }>(
+    '/invoices/list',
+    {},
+  )
   if (response.success) {
-    invoices.value = response.data.invoices as Invoice[]
+    invoices.value = response.data.invoices as InvoicePage[]
   } else {
-    Utils.handlerError(response.error)
+    toast.error('Erreur lors du chargement des factures.')
   }
 }
 
@@ -109,29 +95,35 @@ onMounted(async () => {
       <thead>
         <tr class="text-left border-b border-white">
           <th class="py-5">Client</th>
+          <th>N°</th>
           <th>Nom</th>
           <th>Montant</th>
-          <th>Date</th>
+          <th>Date dernière action</th>
           <th>Statut</th>
         </tr>
       </thead>
       <tbody>
         <tr
-          v-for="invoice in paginatedItems as Invoice[]"
+          v-for="invoice in paginatedItems as InvoicePage[]"
           :key="invoice.id"
           class="border-b border-white py-2"
         >
           <td>{{ invoice.client.name }}</td>
-          <td class="py-5">{{ invoice.name }}</td>
+          <td class="py-5">{{ invoice.number }}</td>
+          <td>{{ invoice.name }}</td>
           <td>{{ invoice.amount }}</td>
-          <td>{{ invoice.logs[invoice.logs.length - 1].createdAt }}</td>
+          <td>
+            {{
+              dayjs(invoice.logs[invoice.logs.length - 1].createdAt).format('DD.MM.YYYY HH:mm:ss')
+            }}
+          </td>
           <td class="space-x-3 text-lg">
             <button
               class="text-white hover:text-blue-500"
               title="Voir les détails"
               @click="openMoreInfoModal(invoice)"
             >
-              <i class="bx bx-info-circle"></i>
+              <i class="bx bx-line-chart"></i>
             </button>
             <button
               class="text-white hover:text-yellow-500"

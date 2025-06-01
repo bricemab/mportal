@@ -50,18 +50,25 @@ const onClose = () => emit('close')
 
 const onSubmit = async () => {
   const payload = {
-    ...invoice.value,
-    // Optionally calculate totals or validate here
+    name: invoice.value.name,
+    clientId: Number(invoice.value.clientId),
+    services: invoice.value.services.map((s) => ({
+      serviceId: Number(s.serviceId),
+      quantity: Number(s.quantity),
+      amount: Number(s.amount),
+    })),
   }
 
   const response = await Utils.postEncodedToBackend<{ invoice: InvoiceType }>(
     '/invoices/create',
     payload,
   )
+
   if (!response.success) {
     toast.error('Erreur lors de la création de la facture : ' + response.error.message)
     return
   }
+
   emit('submit', response.data.invoice)
   toast.success('La facture a été créée avec succès !')
 }
@@ -77,51 +84,80 @@ const removeServiceLine = (index: number) => {
 
 <template>
   <BaseModal :open="open" title="Créer une nouvelle facture" @close="onClose" size="xl">
-<form @submit.prevent="onSubmit" class="max-h-[90vh] overflow-hidden p-4 space-y-4 flex flex-col">
-  
-  <input v-model="invoice.name" required placeholder="Nom de la facture" class="custom-input w-full" />
+    <form
+      @submit.prevent="onSubmit"
+      class="max-h-[90vh] overflow-hidden p-4 space-y-4 flex flex-col"
+    >
+      <input
+        v-model="invoice.name"
+        required
+        placeholder="Nom de la facture"
+        class="custom-input w-full"
+      />
 
-  <select v-model="invoice.clientId" required class="custom-input w-full">
-    <option disabled value="0">Sélectionnez un client</option>
-    <option v-if="clients.length === 0" disabled>Aucun client disponible</option>
-    <option v-for="client in clients" :key="client.id" :value="client.id">
-      {{ client.name }} ({{ client.firstname }} {{ client.lastname }})
-    </option>
-  </select>
-
-  <div class="max-h-64 overflow-y-auto overflow-x-hidden space-y-3">
-    <div v-for="(line, index) in invoice.services" :key="index" class="grid grid-cols-12 gap-3 items-center">
-      <select v-model="line.serviceId" required class="custom-input col-span-6">
-        <option disabled value="0">Service</option>
-        <option v-if="services.length === 0" disabled>Aucun service disponible</option>
-        <option v-for="service in services" :key="service.id" :value="service.id">
-          {{ service.name }}
+      <select v-model="invoice.clientId" required class="custom-input w-full">
+        <option disabled value="0">Sélectionnez un client</option>
+        <option v-if="clients.length === 0" disabled>Aucun client disponible</option>
+        <option v-for="client in clients" :key="client.id" :value="client.id">
+          {{ client.name }} ({{ client.firstname }} {{ client.lastname }})
         </option>
       </select>
 
-      <input v-model.number="line.quantity" type="text" min="1" required placeholder="Q." class="custom-input col-span-2" />
+      <div class="max-h-64 overflow-y-auto overflow-x-hidden space-y-3">
+        <div
+          v-for="(line, index) in invoice.services"
+          :key="index"
+          class="grid grid-cols-12 gap-3 items-center"
+        >
+          <select v-model="line.serviceId" required class="custom-input col-span-6">
+            <option disabled value="0">Service</option>
+            <option v-if="services.length === 0" disabled>Aucun service disponible</option>
+            <option v-for="service in services" :key="service.id" :value="service.id">
+              {{ service.name }}
+            </option>
+          </select>
 
-      <input v-model.number="line.amount" type="text" min="0" step="0.01" required placeholder="P." class="custom-input col-span-3" />
+          <input
+            v-model.number="line.quantity"
+            type="text"
+            min="1"
+            required
+            placeholder="Q."
+            class="custom-input col-span-2"
+          />
 
-      <button type="button" @click="removeServiceLine(index)" v-if="invoice.services.length > 1">
-        <i class="text-red-500 hover:text-red-700 col-span-2 bx bx-trash-alt bx-sm"></i>
-      </button>
-    </div>
-  </div>
+          <input
+            v-model.number="line.amount"
+            type="text"
+            min="0"
+            step="0.01"
+            required
+            placeholder="P."
+            class="custom-input col-span-3"
+          />
 
-  <div class="flex justify-center">
-    <button type="button" @click="addServiceLine" class="flex items-center">
-      <i class="bx bx-plus pr-2"></i>
-      Ajouter un service supplémentaire à facturer
-    </button>
-  </div>
+          <button
+            type="button"
+            @click="removeServiceLine(index)"
+            v-if="invoice.services.length > 1"
+          >
+            <i class="text-red-500 hover:text-red-700 col-span-2 bx bx-trash-alt bx-sm"></i>
+          </button>
+        </div>
+      </div>
 
-  <div class="flex justify-end space-x-3 pt-4">
-    <button @click="onClose" type="button" class="btn btn-secondary">Annuler</button>
-    <button type="submit" class="btn btn-primary">Générer la facture</button>
-  </div>
-</form>
+      <div class="flex justify-center">
+        <button type="button" @click="addServiceLine" class="flex items-center">
+          <i class="bx bx-plus pr-2"></i>
+          Ajouter un service supplémentaire à facturer
+        </button>
+      </div>
 
+      <div class="flex justify-end space-x-3 pt-4">
+        <button @click="onClose" type="button" class="btn btn-secondary">Annuler</button>
+        <button type="submit" class="btn btn-primary">Générer la facture</button>
+      </div>
+    </form>
   </BaseModal>
 </template>
 

@@ -16,6 +16,9 @@ export class InvoiceEntity extends AbstractEntity {
   @Column({ name: "state", type: "varchar", nullable: false })
   state: InvoiceState;
 
+  @Column({ name: "archived", type: "tinyint", default: 0 })
+  archived: boolean;
+
   // Relations
   @ManyToOne(() => ClientEntity)
   @JoinColumn({ name: "client_id" })
