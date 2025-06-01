@@ -1,23 +1,23 @@
 import { Entity, Column, ManyToOne, OneToMany, JoinColumn } from "typeorm";
 import AbstractEntity from "../AbstractEntity";
-import {InvoiceLogCode} from "./InvoiceLogCode";
-import {InvoiceEntity} from "../Invoice/InvoiceEntity";
-import {ClientEntity} from "../Client/ClientEntity";
+import { InvoiceLogCode } from "./InvoiceLogCode";
+import { InvoiceEntity } from "../Invoice/InvoiceEntity";
+import { ClientEntity } from "../Client/ClientEntity";
 
-@Entity('invoice_log')
+@Entity("invoice_log")
 export class InvoiceLogEntity extends AbstractEntity {
-  @Column({ name: 'code', type: 'varchar', nullable: false })
+  @Column({ name: "code", type: "varchar", nullable: false })
   code: InvoiceLogCode;
 
-  @Column({ name: 'detail', type: 'varchar', nullable: false })
-  detail: string;
+  @Column({ name: "details", type: "varchar", nullable: false })
+  details: string;
 
   // Relations
   @ManyToOne(() => InvoiceEntity)
-  @JoinColumn({ name: 'invoice_id' })
+  @JoinColumn({ name: "invoice_id" })
   invoice: InvoiceEntity;
 
   @ManyToOne(() => ClientEntity)
-  @JoinColumn({ name: 'client_id' })
+  @JoinColumn({ name: "client_id" })
   client: ClientEntity;
 }

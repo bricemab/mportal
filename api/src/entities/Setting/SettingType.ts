@@ -1,0 +1,4 @@
+export enum SettingKey {
+  INVOICE_NUMBER = "INVOICE_NUMBER",
+  INVOICE_LOGO = "INVOICE_LOGO",
+}

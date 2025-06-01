@@ -22,7 +22,9 @@ const onClose = () => emit('close')
         {{ data.address + ' ' + data.addressNumber + ', ' + data.postalCode + ', ' + data.city }}
       </p>
       <p><strong>Téléphone :</strong> {{ data.phoneNumber }}</p>
-      <p><strong>Remarque :</strong> {{ data.remark }}</p>
+      <p>
+        <strong>Remarque :</strong><br /><span v-html="data.remark?.replace(/\n/g, '<br>')"></span>
+      </p>
     </div>
 
     <template #footer>
