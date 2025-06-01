@@ -7,7 +7,7 @@ import config from "../config/config";
 import bcrypt from "bcryptjs";
 import dayjs from "dayjs";
 import { UserEntity } from "../entities/User/UserEntity";
-import { ConnexionLogEntity } from "../entities/ConnexionLogEntity/ConnexionLogEntity";
+import { ConnexionLogEntity } from "../entities/ConnexionLog/ConnexionLogEntity";
 
 const AuthRouter = Router();
 
