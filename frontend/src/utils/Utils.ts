@@ -5,7 +5,7 @@ import config from "@/config/config";
 import RequestManager from "@/utils/RequestManager";
 import {routes} from "@/router";
 import type {RouteLocationNormalized, RouteRecordRaw} from "vue-router";
-import {GeneralErrors, WsErrors} from '@/types/BackendErrors.ts'
+import {GeneralErrors} from '@/types/BackendErrors.ts'
 import axios from 'axios'
 
 export default class Utils {

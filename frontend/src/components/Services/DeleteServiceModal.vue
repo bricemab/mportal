@@ -1,0 +1,37 @@
+<script setup lang="ts">
+import BaseModal from '../BaseModal.vue'
+import type { ServiceType } from '@/types/ServiceType.ts'
+import Utils from '@/utils/Utils.ts'
+
+const props = defineProps<{
+  open: boolean
+  data: ServiceType
+}>()
+
+const emit = defineEmits(['close', 'confirm'])
+
+const onClose = () => emit('close')
+const onConfirm = async () => {
+  const response = await Utils.postEncodedToBackend<{ success: boolean }>('/services/delete', {
+    id: props.data.id,
+  })
+  if (!response.success) {
+    return alert('Erreur lors de la suppression du service : ' + response.error.message)
+  }
+  emit('confirm')
+}
+</script>
+
+<template>
+  <BaseModal
+    :open="open"
+    :title="'Êtes-vous sûr de vouloir supprimer ' + data.name + ' ?'"
+    description="Cette action est irréversible !"
+    @close="onClose"
+  >
+    <template #footer>
+      <button @click="onClose" class="btn btn-secondary">Annuler</button>
+      <button @click="onConfirm" class="btn btn-danger">Supprimer</button>
+    </template>
+  </BaseModal>
+</template>
