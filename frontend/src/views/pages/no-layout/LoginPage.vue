@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import { useUserStore } from '@/stores/user.ts'
 import { GeneralErrors } from '@/types/BackendErrors.ts'
 import router from '@/router.ts'
+import { toast } from 'vue3-toastify';
 
 const email = ref('theo.mayoraz02@gmail.com')
 const password = ref('1')
@@ -13,17 +14,17 @@ async function handleLogin() {
   if (!response.success) {
     switch (response.error.code) {
       case GeneralErrors.INVALID_CREDENTIALS:
-        alert('Identifiants incorrects')
+        toast.error("Identifiants incorrects");
         email.value = ''
         password.value = ''
         break
       case GeneralErrors.TOO_MANY_ATTEMPTS:
-        alert('Compte bloqué pendant encore ' + response.error.details + ' minutes')
+        toast.warning('Compte bloqué pendant encore ' + response.error.details + ' minutes');
         email.value = ''
         password.value = ''
         break
       default:
-        alert('Une erreur est survenue, veuillez réessayer plus tard.')
+        toast.warning('Une erreur est survenue, veuillez réessayer plus tard.');
         console.error('Erreur lors de la connexion:', response.error)
         break
     }

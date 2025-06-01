@@ -3,6 +3,7 @@ import BaseModal from '../BaseModal.vue'
 import { reactive, watch } from 'vue'
 import { ServiceType } from '@/types/ServiceType'
 import Utils from '@/utils/Utils.ts'
+import { toast } from 'vue3-toastify';
 
 const props = defineProps<{
   open: boolean
@@ -32,9 +33,10 @@ const onSubmit = async () => {
     service,
   )
   if (!response.success) {
-    return alert('Erreur lors de la modification du service : ' + response.error.message)
+    toast.error("Erreur lors de la modification du service : " + response.error.message);
   }
   emit('submit', response.data.service)
+  toast.success("Le service a été modifié avec succès !");
 }
 </script>
 

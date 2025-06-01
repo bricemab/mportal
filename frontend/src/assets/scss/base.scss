@@ -38,11 +38,11 @@
   .btn {
     @apply text-sm px-4 py-2 rounded-md transition cursor-pointer;
   }
-  
+
   .btn-primary {
     @apply bg-white text-black hover:bg-gray-200;
   }
-  
+
   .btn-secondary {
     @apply bg-lightBlack text-white border border-white/40 hover:bg-white hover:text-black;
   }
@@ -51,8 +51,18 @@
     @apply bg-red-600 text-white hover:bg-red-700;
   }
 
-  input, .custom-input {
+  input,
+  .custom-input {
     @apply w-full px-4 py-2 bg-lightBlack border border-white/50 rounded-md
   }
+
+  .my-toast {
+    @apply bg-white text-black border border-neutral-300 rounded-2xl px-6 py-4 shadow-xl font-outfit text-base;
+  }
+
+  .my-toast-body {
+    @apply text-black font-outfit text-sm;
+  }
+
 
 }

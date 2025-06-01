@@ -2,6 +2,7 @@
 import BaseModal from '../BaseModal.vue'
 import type { ClientType } from '@/types/ClientType.ts'
 import Utils from '@/utils/Utils.ts'
+import { toast } from 'vue3-toastify';
 
 const props = defineProps<{
   open: boolean
@@ -16,9 +17,10 @@ const onConfirm = async () => {
     id: props.data.id,
   })
   if (!response.success) {
-    return alert('Erreur lors de la suppression du client : ' + response.error.message)
+    toast.error("Erreur lors de la suppression du client : " + response.error.message);
   }
   emit('confirm')
+  toast.success("Le client a été supprimé avec succès !");
 }
 </script>
 

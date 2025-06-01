@@ -3,6 +3,7 @@ import BaseModal from '../BaseModal.vue'
 import { ref } from 'vue'
 import { ServiceType } from '@/types/ServiceType.ts'
 import Utils from '@/utils/Utils.ts'
+import { toast } from 'vue3-toastify';
 
 const props = defineProps<{
   open: boolean
@@ -30,9 +31,10 @@ const onSubmit = async () => {
     service.value,
   )
   if (!response.success) {
-    return alert('Erreur lors de la création du service : ' + response.error.message)
+    toast.error("Erreur lors de la création du service : " + response.error.message);
   }
   emit('submit', response.data.service)
+  toast.success("Le service a été créé avec succès !");
 }
 </script>
 

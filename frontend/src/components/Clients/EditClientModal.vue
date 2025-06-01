@@ -3,6 +3,7 @@ import BaseModal from '../BaseModal.vue'
 import { reactive, watch } from 'vue'
 import type { ClientType } from '@/types/ClientType'
 import Utils from '@/utils/Utils.ts'
+import { toast } from 'vue3-toastify';
 
 const props = defineProps<{
   open: boolean
@@ -22,9 +23,11 @@ const onClose = () => emit('close')
 const onSubmit = async () => {
   const response = await Utils.postEncodedToBackend<{ client: ClientType }>('/clients/edit', client)
   if (!response.success) {
-    return alert('Erreur lors de la modification du client : ' + response.error.message)
+    toast.error("Erreur lors de la modification du client : " + response.error.message);
   }
   emit('submit', response.data.client)
+  toast.success("Le client a été modifié avec succès !");
+
 }
 </script>
 
