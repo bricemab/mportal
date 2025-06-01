@@ -141,13 +141,8 @@ onMounted(async () => {
           <th>Nom</th>
           <th>Montant</th>
           <th>Date dernière action</th>
-<<<<<<< Updated upstream
-          <th>Statut</th>
-          <th></th>
-=======
           <th>Status</th>
           <th>Actions</th>
->>>>>>> Stashed changes
         </tr>
       </thead>
       <tbody>
@@ -165,7 +160,6 @@ onMounted(async () => {
               dayjs(invoice.logs[invoice.logs.length - 1].createdAt).format('DD.MM.YYYY HH:mm:ss')
             }}
           </td>
-<<<<<<< Updated upstream
           <td>
             <select
               v-model="invoice.state"
@@ -178,10 +172,6 @@ onMounted(async () => {
               </option>
             </select>
           </td>
-
-=======
-          <td>{{ invoice.state }}</td>
->>>>>>> Stashed changes
           <td class="space-x-3 text-lg">
             <button
               class="text-white hover:text-blue-500"

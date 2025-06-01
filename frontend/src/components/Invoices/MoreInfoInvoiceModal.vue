@@ -51,11 +51,10 @@ const onClose = () => emit('close')
     <div class="space-y-2">
       <div class="space-y-4">
         <div v-for="log in invoice.logs" :key="log.id" class="flex items-start space-x-3">
-<<<<<<< Updated upstream
-          <div class="rounded-full p-2 flex" :class="iconStyles[log.code].bg">
-=======
-          <div class="rounded-full p-2 flex items-center justify-center" :class="iconStyles[log.code].bg">
->>>>>>> Stashed changes
+          <div
+            class="rounded-full p-2 flex items-center justify-center"
+            :class="iconStyles[log.code].bg"
+          >
             <i :class="['bx', iconStyles[log.code].icon, iconStyles[log.code].text, 'text-xl']"></i>
           </div>
 
