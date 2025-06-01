@@ -379,4 +379,57 @@ RequestManager.post(
   ),
 );
 
+RequestManager.post(
+  InvoiceRouter,
+  "/generate",
+  true,
+  RequestManager.asyncResolver(
+    async (
+      request: ApplicationRequest<{
+        token: string;
+        data: {
+          id: number;
+        };
+      }>,
+      response: Response,
+    ) => {
+      if (!request.body.data || !request.body.data.id) {
+        return RequestManager.sendResponse(response, {
+          success: false,
+          error: {
+            code: GeneralErrors.INVALID_REQUEST,
+            message: "Missing required fields",
+          },
+        });
+      }
+      const { id } = request.body.data;
+
+      const invoice = await InvoiceEntity.findOne({
+        where: { id },
+      });
+      if (!invoice) {
+        return RequestManager.sendResponse(response, {
+          success: false,
+          error: {
+            code: GeneralErrors.OBJECT_NOT_FOUND_IN_DATABASE,
+            message: "Invoice not found",
+          },
+        });
+      }
+      const log = await InvoiceLogEntity.findOne({
+        where: { invoice: { id: invoice.id }, code: InvoiceState.SENT },
+      });
+      if (!log) {
+        invoice.state = InvoiceState.GENERATED;
+        await invoice.save();
+      }
+      // todo: generate PDF
+      return RequestManager.sendResponse(response, {
+        success: true,
+        data: {},
+      });
+    },
+  ),
+);
+
 export default InvoiceRouter;
