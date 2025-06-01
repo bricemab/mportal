@@ -46,7 +46,7 @@ const onSubmit = async () => {
       </div>
       <input v-model="client.email" placeholder="Email" class="custom-input" />
       <input v-model="client.phoneNumber" placeholder="Téléphone" class="custom-input" />
-      <input v-model="client.remark" placeholder="Remarque" class="custom-input" />
+      <textarea v-model="client.remark" placeholder="Remarque" class="custom-input h-24"></textarea>
 
       <div class="flex justify-end space-x-3 pt-4">
         <button @click="onClose" type="button" class="btn btn-secondary">Annuler</button>
