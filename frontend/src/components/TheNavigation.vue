@@ -6,7 +6,6 @@ const menuItems = [
     { icon: 'bx bx-group', label: 'Clients', to: '/clients' },
     { icon: 'bx bxs-component', label: 'Services', to: '/services' },
     { icon: 'bx bxs-bank', label: 'Facturations', to: '/billings' },
-    { icon: 'bx bx-dna', label: 'UI', to: '/UI' },
 ]
 
 const route = useRoute()

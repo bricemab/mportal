@@ -15,25 +15,6 @@ export default class AclManager {
 
     console.log('ACL Check:', user, jwt, routeMustBeLogged)
 
-    if (config.isDevModeEnabled) {
-      user = {
-        id: 1,
-        email: 'admin',
-        firstname: 'Admin',
-        lastname: 'User',
-      }
-      jwt = {
-        iat: 123845,
-        exp: Math.floor(Date.now() / 1000) + 99999999,
-        user,
-      }
-      return {
-        isAllow: true,
-        redirectRouteName: '',
-        params,
-      }
-    }
-
     if (jwt) {
       if (jwt.exp < Date.now() / 1000) {
         userStore.clear()

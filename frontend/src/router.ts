@@ -6,7 +6,6 @@ import DefaultLayout from './views/layouts/DefaultLayout.vue'
 import LoginPage from '@/views/pages/no-layout/LoginPage.vue'
 import IndexPage from '@/views/pages/default-layout/IndexPage.vue'
 import AclManager from '@/AclManager.ts'
-import UI from './views/pages/default-layout/UI.vue'
 import ClientsPage from './views/pages/default-layout/ClientsPage.vue'
 import ServicesPage from './views/pages/default-layout/ServicesPage.vue'
 import BillingPage from './views/pages/default-layout/BillingPage.vue'
@@ -42,12 +41,6 @@ export const routes: RouteRecordRaw[] = [
             path: '',
             name: 'index-page',
             component: IndexPage,
-            meta: { logged: true },
-          },
-          {
-            path: 'UI',
-            name: 'ui-page',
-            component: UI,
             meta: { logged: true },
           },
           {

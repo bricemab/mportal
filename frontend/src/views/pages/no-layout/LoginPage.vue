@@ -4,7 +4,7 @@ import { useUserStore } from '@/stores/user.ts'
 import { GeneralErrors } from '@/types/BackendErrors.ts'
 import router from '@/router.ts'
 
-const email = ref('bricemabi@gmail.com')
+const email = ref('theo.mayoraz02@gmail.com')
 const password = ref('1')
 
 async function handleLogin() {
