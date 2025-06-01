@@ -47,6 +47,10 @@ RequestManager.post(
           email: string;
           phoneNumber: string;
           remark: string;
+          address: string;
+          addressNumber: string;
+          postalCode: string;
+          city: string;
         };
       }>,
       response: Response,
@@ -57,6 +61,10 @@ RequestManager.post(
         !request.body.data.firstname ||
         !request.body.data.lastname ||
         !request.body.data.email ||
+        !request.body.data.address ||
+        !request.body.data.addressNumber ||
+        !request.body.data.city ||
+        !request.body.data.postalCode ||
         !request.body.data.phoneNumber
       ) {
         return RequestManager.sendResponse(response, {
@@ -67,13 +75,27 @@ RequestManager.post(
           },
         });
       }
-      const { email, phoneNumber, lastname, firstname, name, remark } =
-        request.body.data;
+      const {
+        email,
+        phoneNumber,
+        lastname,
+        firstname,
+        name,
+        remark,
+        addressNumber,
+        address,
+        city,
+        postalCode,
+      } = request.body.data;
       const client = new ClientEntity();
       client.name = name;
       client.firstname = firstname;
       client.lastname = lastname;
       client.email = email;
+      client.address = address;
+      client.addressNumber = addressNumber;
+      client.postalCode = postalCode;
+      client.city = city;
       client.phoneNumber = phoneNumber;
       client.remark = remark;
       await client.save();
@@ -103,6 +125,10 @@ RequestManager.post(
           email: string;
           phoneNumber: string;
           remark: string;
+          address: string;
+          addressNumber: string;
+          postalCode: string;
+          city: string;
         };
       }>,
       response: Response,
@@ -114,6 +140,10 @@ RequestManager.post(
         !request.body.data.firstname ||
         !request.body.data.lastname ||
         !request.body.data.email ||
+        !request.body.data.address ||
+        !request.body.data.addressNumber ||
+        !request.body.data.city ||
+        !request.body.data.postalCode ||
         !request.body.data.phoneNumber
       ) {
         return RequestManager.sendResponse(response, {
@@ -124,8 +154,19 @@ RequestManager.post(
           },
         });
       }
-      const { id, email, phoneNumber, lastname, firstname, name, remark } =
-        request.body.data;
+      const {
+        id,
+        email,
+        phoneNumber,
+        lastname,
+        firstname,
+        name,
+        remark,
+        addressNumber,
+        address,
+        city,
+        postalCode,
+      } = request.body.data;
 
       const client = await ClientEntity.findOne({
         where: { id },
@@ -143,6 +184,10 @@ RequestManager.post(
       client.firstname = firstname;
       client.lastname = lastname;
       client.email = email;
+      client.address = address;
+      client.addressNumber = addressNumber;
+      client.postalCode = postalCode;
+      client.city = city;
       client.phoneNumber = phoneNumber;
       client.remark = remark;
       await client.save();

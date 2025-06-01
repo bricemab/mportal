@@ -6,6 +6,10 @@ export interface ClientType {
   email: string
   phoneNumber: string
   remark: string
+  address: string
+  addressNumber: string
+  postalCode: string
+  city: string
   createdAt: string
   updatedAt: string
 }

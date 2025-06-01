@@ -17,6 +17,10 @@ const onClose = () => emit('close')
       <p><strong>Nom :</strong> {{ data.firstname + ' ' + data.lastname }}</p>
       <p><strong>Entreprise :</strong> {{ data.name }}</p>
       <p><strong>Email :</strong> {{ data.email }}</p>
+      <p>
+        <strong>Adresse :</strong>
+        {{ data.address + ' ' + data.addressNumber + ', ' + data.postalCode + ', ' + data.city }}
+      </p>
       <p><strong>Téléphone :</strong> {{ data.phoneNumber }}</p>
       <p><strong>Remarque :</strong> {{ data.remark }}</p>
     </div>

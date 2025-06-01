@@ -3,7 +3,7 @@ import BaseModal from '../BaseModal.vue'
 import { reactive, watch } from 'vue'
 import type { ClientType } from '@/types/ClientType'
 import Utils from '@/utils/Utils.ts'
-import { toast } from 'vue3-toastify';
+import { toast } from 'vue3-toastify'
 
 const props = defineProps<{
   open: boolean
@@ -23,11 +23,10 @@ const onClose = () => emit('close')
 const onSubmit = async () => {
   const response = await Utils.postEncodedToBackend<{ client: ClientType }>('/clients/edit', client)
   if (!response.success) {
-    toast.error("Erreur lors de la modification du client : " + response.error.message);
+    toast.error('Erreur lors de la modification du client : ' + response.error.message)
   }
   emit('submit', response.data.client)
-  toast.success("Le client a été modifié avec succès !");
-
+  toast.success('Le client a été modifié avec succès !')
 }
 </script>
 
@@ -37,6 +36,14 @@ const onSubmit = async () => {
       <input v-model="client.lastname" required placeholder="Nom" class="custom-input" />
       <input v-model="client.firstname" required placeholder="Prénom" class="custom-input" />
       <input v-model="client.name" required placeholder="Entreprise" class="custom-input" />
+      <div class="w-full flex space-x-3">
+        <input v-model="client.address" placeholder="Adresse" class="custom-input w-3/4" />
+        <input v-model="client.addressNumber" placeholder="Numéro" class="custom-input w-1/4" />
+      </div>
+      <div class="w-full flex space-x-3">
+        <input v-model="client.postalCode" placeholder="NPA" class="custom-input w-1/2" />
+        <input v-model="client.city" placeholder="Localité" class="custom-input w-1/2" />
+      </div>
       <input v-model="client.email" placeholder="Email" class="custom-input" />
       <input v-model="client.phoneNumber" placeholder="Téléphone" class="custom-input" />
       <input v-model="client.remark" placeholder="Remarque" class="custom-input" />

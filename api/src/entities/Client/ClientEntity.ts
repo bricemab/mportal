@@ -17,6 +17,18 @@ export class ClientEntity extends AbstractEntity {
   @Column({ name: "email", type: "varchar", nullable: true })
   email: string;
 
+  @Column({ name: "address", type: "varchar", nullable: true })
+  address: string;
+
+  @Column({ name: "addressNumber", type: "varchar", nullable: true })
+  addressNumber: string;
+
+  @Column({ name: "postalCode", type: "varchar", nullable: true })
+  postalCode: string;
+
+  @Column({ name: "city", type: "varchar", nullable: true })
+  city: string;
+
   @Column({ name: "phone_umber", type: "varchar", nullable: true })
   phoneNumber: string;
 
