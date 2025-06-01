@@ -27,14 +27,14 @@ const fetchOptions = async () => {
     Utils.postEncodedToBackend<{ services: ServiceType[] }>('/services/list'),
   ])
 
-  if (clientRes.success) {
-    clients.value = clientRes.data
+  if (clientRes.success && clientRes.data) {
+    clients.value = clientRes.data.clients
   } else {
     toast.error('Erreur lors du chargement des clients.')
   }
 
-  if (serviceRes.success) {
-    services.value = serviceRes.data
+  if (serviceRes.success && serviceRes.data) {
+    services.value = serviceRes.data.services
   } else {
     toast.error('Erreur lors du chargement des services.')
   }
@@ -73,7 +73,7 @@ const onSubmit = async () => {
         <option disabled value="0">Sélectionnez un client</option>
         <option v-if="clients.length === 0" disabled>Aucun client disponible</option>
         <option v-for="client in clients as ClientType" :key="client.id" :value="client.id">
-          {{ client.firstname }} {{ client.lastname }} ({{ client.name }})
+          {{ client.name }} ({{ client.firstname }} {{ client.lastname }})
         </option>
       </select>
 
