@@ -12,4 +12,7 @@ export class ServiceEntity extends AbstractEntity {
 
   @Column({ name: "type", type: "varchar", nullable: false })
   type: ServiceType;
+
+  @Column({ name: "archived", type: "tinyint", default: 0 })
+  archived: boolean;
 }

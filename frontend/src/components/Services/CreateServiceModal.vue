@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import BaseModal from '../BaseModal.vue'
 import { ref } from 'vue'
-import { ServiceType } from '@/types/ServiceType.ts'
+import { ServiceTypeType } from '@/types/ServiceType.ts'
 import Utils from '@/utils/Utils.ts'
 import { toast } from 'vue3-toastify';
 
@@ -18,9 +18,9 @@ const service = ref({
 })
 
 const serviceTypes = [
-  { value: ServiceType.YEARLY, label: 'Annuel' },
-  { value: ServiceType.MONTHLY, label: 'Mensuel' },
-  { value: ServiceType.UNIQUE, label: 'Unique' },
+  { value: ServiceTypeType.YEARLY, label: 'Annuel' },
+  { value: ServiceTypeType.MONTHLY, label: 'Mensuel' },
+  { value: ServiceTypeType.UNIQUE, label: 'Unique' },
 ]
 
 const onClose = () => emit('close')
@@ -42,7 +42,12 @@ const onSubmit = async () => {
   <BaseModal :open="open" title="Créer un nouveau service" @close="onClose">
     <form @submit.prevent="onSubmit" class="space-y-3">
       <input v-model="service.name" required placeholder="Nom" class="custom-input" />
-      <input v-model="service.description" required placeholder="Description" class="custom-input" />
+      <input
+        v-model="service.description"
+        required
+        placeholder="Description"
+        class="custom-input"
+      />
 
       <select v-model="service.type" required class="custom-input">
         <option disabled value="">Sélectionnez un type</option>

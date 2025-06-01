@@ -1,12 +1,12 @@
-export enum ServiceType {
-  YEARLY = "YEARLY",
-  MONTHLY = "MONTHLY",
-  UNIQUE = "UNIQUE",
+export enum ServiceTypeType {
+  YEARLY = 'YEARLY',
+  MONTHLY = 'MONTHLY',
+  UNIQUE = 'UNIQUE',
 }
 
-export interface Service {
-  name: string;
-  description: string;
-  serviceType: ServiceType;
+export interface ServiceType {
+  id: number
+  name: string
+  description: string
+  type: ServiceTypeType
 }
-

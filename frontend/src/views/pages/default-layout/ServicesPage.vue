@@ -4,9 +4,8 @@ import ThePagination from '@/components/ThePagination.vue'
 
 import DeleteServiceModal from '@/components/Services/DeleteServiceModal.vue'
 import EditServiceModal from '@/components/Services/EditServiceModal.vue'
-import MoreInfoServiceModal from '@/components/Services/MoreInfoServiceModal.vue'
 import CreateServiceModal from '@/components/Services/CreateServiceModal.vue'
-import type { ServiceType } from '@/types/ServicesType.ts'
+import { ServiceTypeType, type ServiceType } from '@/types/ServiceType.ts'
 import Utils from '@/utils/Utils.ts'
 
 const services = ref<ServiceType[]>([])
@@ -66,13 +65,22 @@ function handleCreateSubmit(newService: ServiceType) {
 }
 
 const fetchList = async () => {
-  const response = await Utils.postEncodedToBackend<{ services: ServiceType[] }>('/services/list', {})
+  const response = await Utils.postEncodedToBackend<{ services: ServiceType[] }>(
+    '/services/list',
+    {},
+  )
   if (response.success) {
     services.value = response.data.services as ServiceType[]
   } else {
     Utils.handlerError(response.error)
   }
 }
+
+const serviceTypes = [
+  { value: ServiceTypeType.YEARLY, label: 'Annuel' },
+  { value: ServiceTypeType.MONTHLY, label: 'Mensuel' },
+  { value: ServiceTypeType.UNIQUE, label: 'Unique' },
+]
 
 onMounted(async () => {
   await fetchList()
@@ -109,7 +117,7 @@ onMounted(async () => {
         >
           <td>{{ service.name }}</td>
           <td class="py-5">{{ service.description }}</td>
-          <td>{{ service.serviceType }}</td>
+          <td>{{ serviceTypes.find((s) => s.value === service.type)?.label }}</td>
           <td class="space-x-3 text-lg">
             <button
               class="text-white hover:text-yellow-500"
