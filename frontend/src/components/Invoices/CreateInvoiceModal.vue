@@ -84,16 +84,8 @@ const removeServiceLine = (index: number) => {
 
 <template>
   <BaseModal :open="open" title="Créer une nouvelle facture" @close="onClose" size="xl">
-    <form
-      @submit.prevent="onSubmit"
-      class="max-h-[90vh] overflow-hidden p-4 space-y-4 flex flex-col"
-    >
-      <input
-        v-model="invoice.name"
-        required
-        placeholder="Nom de la facture"
-        class="custom-input w-full"
-      />
+    <form @submit.prevent="onSubmit" class="max-h-[90vh] overflow-hidden p-4 space-y-4 flex flex-col">
+      <input v-model="invoice.name" required placeholder="Nom de la facture" class="custom-input w-full" />
 
       <select v-model="invoice.clientId" required class="custom-input w-full">
         <option disabled value="0">Sélectionnez un client</option>
@@ -103,12 +95,8 @@ const removeServiceLine = (index: number) => {
         </option>
       </select>
 
-      <div class="max-h-64 overflow-y-auto overflow-x-hidden space-y-3">
-        <div
-          v-for="(line, index) in invoice.services"
-          :key="index"
-          class="grid grid-cols-12 gap-3 items-center"
-        >
+      <div class="max-h-64 overflow-y-auto overflow-x-hidden space-y-3 py-1">
+        <div v-for="(line, index) in invoice.services" :key="index" class="grid grid-cols-12 gap-3 items-center">
           <select v-model="line.serviceId" required class="custom-input col-span-6">
             <option disabled value="0">Service</option>
             <option v-if="services.length === 0" disabled>Aucun service disponible</option>
@@ -117,30 +105,13 @@ const removeServiceLine = (index: number) => {
             </option>
           </select>
 
-          <input
-            v-model.number="line.quantity"
-            type="text"
-            min="1"
-            required
-            placeholder="Q."
-            class="custom-input col-span-2"
-          />
+          <input v-model.number="line.quantity" type="text" min="1" required placeholder="Q."
+            class="custom-input col-span-2" />
 
-          <input
-            v-model.number="line.amount"
-            type="text"
-            min="0"
-            step="0.01"
-            required
-            placeholder="P."
-            class="custom-input col-span-3"
-          />
+          <input v-model.number="line.amount" type="text" min="0" step="0.01" required placeholder="P."
+            class="custom-input col-span-3" />
 
-          <button
-            type="button"
-            @click="removeServiceLine(index)"
-            v-if="invoice.services.length > 1"
-          >
+          <button type="button" @click="removeServiceLine(index)" v-if="invoice.services.length > 1">
             <i class="text-red-500 hover:text-red-700 col-span-2 bx bx-trash-alt bx-sm"></i>
           </button>
         </div>
