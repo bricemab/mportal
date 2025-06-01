@@ -3,17 +3,19 @@ import { defineComponent } from 'vue'
 import { useRoute } from 'vue-router'
 import TheNavigation from '@/components/TheNavigation.vue'
 import UserProfile from '@/components/UserProfile.vue'
+import { useUserStore } from '../../stores/user.ts'
 
 export default defineComponent({
   name: 'DefaultLayout',
+  methods: { useUserStore },
   components: {
     TheNavigation,
-    UserProfile
+    UserProfile,
   },
   setup() {
     const route = useRoute()
     return { route }
-  }
+  },
 })
 </script>
 
@@ -23,7 +25,7 @@ export default defineComponent({
     <div class="flex flex-col flex-1 space-y-6">
       <div class="flex justify-between items-center px-9 pt-3">
         <h2 v-if="route.path === '/'" class="text-2xl font-semibold text-white flex items-center">
-          Bonjour Théo
+          Bonjour {{ useUserStore().getUser()!.firstname }}
           <img src="../../assets/ressources/wave-hand.png" alt="👋" class="ml-2 w-6 h-6" />
         </h2>
         <div v-else></div>

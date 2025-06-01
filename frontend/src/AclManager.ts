@@ -1,46 +1,46 @@
 import { useUserStore } from '@/stores/user.ts'
-import config from "@/config/config.ts";
+import config from '@/config/config.ts'
 
 export default class AclManager {
   public static hasPermission(routeMustBeLogged: boolean): {
-    isAllow: boolean,
-    redirectRouteName?: string,
+    isAllow: boolean
+    redirectRouteName?: string
     params?: object
   } {
-    const userStore = useUserStore();
-    let user = userStore.getUser();
-    let jwt = userStore.getDecodeJwt();
-    let redirectRouteName = '';
-    const params = undefined;
+    const userStore = useUserStore()
+    let user = userStore.getUser()
+    let jwt = userStore.getDecodeJwt()
+    let redirectRouteName = ''
+    const params = undefined
+
+    console.log('ACL Check:', user, jwt, routeMustBeLogged)
 
     if (config.isDevModeEnabled) {
       user = {
         id: 1,
         email: 'admin',
         firstname: 'Admin',
-        lastname: 'User'
-      };
+        lastname: 'User',
+      }
       jwt = {
         iat: 123845,
         exp: Math.floor(Date.now() / 1000) + 99999999,
-        user
+        user,
       }
       return {
         isAllow: true,
         redirectRouteName: '',
-        params
+        params,
       }
     }
 
-    console.log(routeMustBeLogged, user, jwt);
-
     if (jwt) {
       if (jwt.exp < Date.now() / 1000) {
-        userStore.clear();
+        userStore.clear()
         return {
           isAllow: false,
-          redirectRouteName: "login-page",
-          params
+          redirectRouteName: 'login-page',
+          params,
         }
       }
     }
@@ -50,22 +50,26 @@ export default class AclManager {
         return {
           isAllow: true,
           redirectRouteName: '',
-          params
+          params,
         }
       }
+      routeMustBeLogged = false
+      redirectRouteName = 'login-page'
     } else {
-      if (!routeMustBeLogged) {
+      if (routeMustBeLogged) {
         return {
-          isAllow: false,
-          redirectRouteName: 'index-page',
-          params
+          isAllow: true,
+          redirectRouteName: '',
+          params,
         }
       }
+      routeMustBeLogged = false
+      redirectRouteName = 'index-page'
     }
     return {
       isAllow: routeMustBeLogged,
       redirectRouteName,
-      params
+      params,
     }
   }
 }

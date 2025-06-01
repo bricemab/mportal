@@ -4,41 +4,52 @@ import type { ApplicationResponse, ApplicationSession } from '@/types/GlobalType
 import { jwtDecode } from 'jwt-decode'
 import config from '@/config/config.ts'
 import Utils from '@/utils/Utils.ts'
+import router from '@/router.ts'
 
 export type UserStore = {
-  user: UserSession | null;
+  user: UserSession | null
   jwt: string
 }
 
 export const useUserStore = defineStore(config.api.jwt.name, {
   state: (): UserStore => ({
     user: null as UserSession | null,
-    jwt: '' as string
+    jwt: '' as string,
   }),
   getters: {
     isLoggedIn: (state): boolean => state.user !== null,
   },
   actions: {
-    async login(credentials: { login: string; password: string }): Promise<ApplicationResponse<{
-      user: UserSession;
-      jwt: string;
-    }>> {
+    async auth(credentials: { email: string; password: string }): Promise<
+      ApplicationResponse<{
+        user: UserSession
+        jwt: string
+      }>
+    > {
       const response = await Utils.postEncodedToBackend<{
-        user: UserSession;
-        jwt: string;
+        user: UserSession
+        jwt: string
       }>('/auth/login', credentials)
       if (!response.success) {
-        return response;
+        return response
       }
-      const { user, jwt } = response.data;
-      this.setUser(user);
-      this.setJwt(jwt);
-      return response;
+      const { user, jwt } = response.data
+      this.setUser(user)
+      this.setJwt(jwt)
+      return response
     },
-    getDecodeJwt():ApplicationSession | null {
-      const jwt = this.getJwt();
-      if (!jwt) return null;
-      return  jwtDecode(jwt) as ApplicationSession;
+    async logout(): Promise<void> {
+      this.clear()
+      await router.push({ name: 'login-page' })
+    },
+    getFullName: (): string => {
+      const state = useUserStore()
+      return state.user ? `${state.user.firstname} ${state.user.lastname}` : ''
+    },
+    getDecodeJwt(): ApplicationSession | null {
+      const jwt = this.getJwt()
+      if (!jwt) return null
+      return jwtDecode(jwt) as ApplicationSession
     },
     setUser(user: UserSession): void {
       this.user = user
@@ -56,12 +67,12 @@ export const useUserStore = defineStore(config.api.jwt.name, {
     getJwt(): string {
       return this.jwt
     },
-    getState():UserStore  {
+    getState(): UserStore {
       return {
         user: this.user,
         jwt: this.jwt,
       }
-    }
+    },
   },
   persist: true,
 })

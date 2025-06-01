@@ -9,7 +9,7 @@ const chartData = {
   labels: ['Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'],
   datasets: [
     {
-      label: 'Chiffre d\'affaires',
+      label: "Chiffre d'affaires",
       data: [10000, 20000, 50000, 80000, 30000, 25000, 50000, 80000],
       borderColor: '#22c55e',
       backgroundColor: 'rgba(34,197,94,0.2)',
@@ -32,7 +32,7 @@ const chartOptions = {
       beginAtZero: false,
     },
   },
-};
+}
 
 const factures = ref([
   {
@@ -60,7 +60,6 @@ const factures = ref([
     statut: 'Payée',
   },
 ])
-
 </script>
 
 <template>
@@ -69,7 +68,7 @@ const factures = ref([
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
       <div class="bg-lightBlack p-6 rounded-xl flex items-center gap-4">
         <div class="bg-white w-15 h-15 flex items-center justify-center rounded-full">
-          <i class='bx bx-group text-2xl text-black'></i>
+          <i class="bx bx-group text-2xl text-black"></i>
         </div>
         <div>
           <p class="text-sm">Total de clients</p>
@@ -78,7 +77,7 @@ const factures = ref([
       </div>
       <div class="bg-lightBlack p-6 rounded-xl flex items-center gap-4">
         <div class="bg-white w-15 h-15 flex items-center justify-center rounded-full">
-          <i class='bx bx-group text-2xl text-black'></i>
+          <i class="bx bx-group text-2xl text-black"></i>
         </div>
         <div>
           <p class="text-sm">Nombre de services</p>
@@ -87,7 +86,7 @@ const factures = ref([
       </div>
       <div class="bg-lightBlack p-6 rounded-xl flex items-center gap-4">
         <div class="bg-white w-15 h-15 flex items-center justify-center rounded-full">
-          <i class='bx bx-group text-2xl text-black'></i>
+          <i class="bx bx-group text-2xl text-black"></i>
         </div>
         <div>
           <p class="text-sm">Facture générées</p>
@@ -115,7 +114,6 @@ const factures = ref([
         <h4 class="mb-4">Meilleur mois</h4>
         <p class="text-xl font-semibold">Novembre</p>
         <p class="text-sm">2024</p>
-
       </div>
       <div class="bg-lightBlack p-6 rounded-xl">
         <h4 class="mb-4">Meilleur année</h4>
@@ -138,7 +136,7 @@ const factures = ref([
         </div>
         <router-link to="/billings">
           <button class="btn btn-primary flex items-center">
-            <i class='bx bx-plus pr-2'></i>
+            <i class="bx bx-plus pr-2"></i>
             Voir plus
           </button>
         </router-link>
@@ -160,10 +158,14 @@ const factures = ref([
             <td>{{ facture.montant }}.-</td>
             <td>{{ facture.date }}</td>
             <td>
-              <span :class="[
-                facture.statut === 'Impayée' ? 'bg-red-600 text-red-300' : 'bg-green-600 text-green-300',
-                'text-xs px-3 py-1 rounded-md'
-              ]">
+              <span
+                :class="[
+                  facture.statut === 'Impayée'
+                    ? 'bg-red-600 text-red-300'
+                    : 'bg-green-600 text-green-300',
+                  'text-xs px-3 py-1 rounded-md',
+                ]"
+              >
                 {{ facture.statut }}
               </span>
             </td>

@@ -1,20 +1,26 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import Image from '@/assets/ressources/avatar.jpg'
+import { useUserStore } from '@/stores/user.ts'
 
 const showDropdown = ref(false)
 const dropdownRef = ref<HTMLElement | null>(null)
 
 const user = {
-  fullName: 'Théo Mayoraz',
+  fullName: useUserStore().getFullName(),
   position: 'CEO',
-  avatar: Image
+  avatar: Image,
 }
 
 const handleClickOutside = (e: MouseEvent) => {
   if (dropdownRef.value && !dropdownRef.value.contains(e.target as Node)) {
     showDropdown.value = false
   }
+}
+
+const logout = async () => {
+  const store = useUserStore()
+  await store.logout()
 }
 
 onMounted(() => {
@@ -40,16 +46,19 @@ onBeforeUnmount(() => {
     <div
       v-show="showDropdown"
       class="absolute right-0 mt-2 w-44 bg-white text-black rounded-md shadow-lg z-10 origin-top-right transition-all duration-200 ease-out"
-      :class="[
-        showDropdown ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'
-      ]">
-      <router-link to="/settings"
-        class="flex items-center block px-4 py-2 hover:bg-gray-100 hover:rounded-md">
-        <i class='bx bx-cog pr-2'></i>Paramètres
+      :class="[showDropdown ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none']"
+    >
+      <router-link
+        to="/settings"
+        class="flex items-center block px-4 py-2 hover:bg-gray-100 hover:rounded-md"
+      >
+        <i class="bx bx-cog pr-2"></i>Paramètres
       </router-link>
-      <button @click="console.log('Déconnexion')"
-        class="flex items-center w-full text-left px-4 py-2 hover:bg-gray-100 hover:rounded-md text-red-600">
-        <i class='bx bx-log-out pr-2'></i>Se déconnecter
+      <button
+        @click="logout"
+        class="flex items-center w-full text-left px-4 py-2 hover:bg-gray-100 hover:rounded-md text-red-600"
+      >
+        <i class="bx bx-log-out pr-2"></i>Se déconnecter
       </button>
     </div>
   </div>

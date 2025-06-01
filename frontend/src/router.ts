@@ -3,13 +3,13 @@ import App from '@/App.vue'
 
 import NoLayout from './views/layouts/NoLayout.vue'
 import DefaultLayout from './views/layouts/DefaultLayout.vue'
-import LoginPage from "@/views/pages/no-layout/LoginPage.vue";
-import IndexPage from "@/views/pages/default-layout/IndexPage.vue";
-import AclManager from "@/AclManager.ts";
-import UI from './views/pages/default-layout/UI.vue';
-import ClientsPage from './views/pages/default-layout/ClientsPage.vue';
-import ServicesPage from './views/pages/default-layout/ServicesPage.vue';
-import BillingPage from './views/pages/default-layout/BillingPage.vue';
+import LoginPage from '@/views/pages/no-layout/LoginPage.vue'
+import IndexPage from '@/views/pages/default-layout/IndexPage.vue'
+import AclManager from '@/AclManager.ts'
+import UI from './views/pages/default-layout/UI.vue'
+import ClientsPage from './views/pages/default-layout/ClientsPage.vue'
+import ServicesPage from './views/pages/default-layout/ServicesPage.vue'
+import BillingPage from './views/pages/default-layout/BillingPage.vue'
 
 export const routes: RouteRecordRaw[] = [
   {
@@ -26,9 +26,9 @@ export const routes: RouteRecordRaw[] = [
             path: '',
             name: 'login-page',
             component: LoginPage,
-            meta: { logged: false }
-          }
-        ]
+            meta: { logged: false },
+          },
+        ],
       },
       {
         path: '',
@@ -42,35 +42,35 @@ export const routes: RouteRecordRaw[] = [
             path: '',
             name: 'index-page',
             component: IndexPage,
-            meta: { logged: true }
+            meta: { logged: true },
           },
           {
             path: 'UI',
             name: 'ui-page',
             component: UI,
-            meta: { logged: true }
+            meta: { logged: true },
           },
           {
             path: 'clients',
             name: 'client-page',
             component: ClientsPage,
-            meta: { logged: true }
+            meta: { logged: true },
           },
           {
             path: 'services',
             name: 'service-page',
             component: ServicesPage,
-            meta: { logged: true }
+            meta: { logged: true },
           },
           {
             path: 'billings',
             name: 'billing-page',
             component: BillingPage,
-            meta: { logged: true }
-          }
-        ]
-      }
-    ]
+            meta: { logged: true },
+          },
+        ],
+      },
+    ],
   },
   {
     path: '/:pathMatch(.*)*',
@@ -93,17 +93,17 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   // @ts-ignore
   const { isAllow, redirectRouteName, params } = AclManager.hasPermission(to.meta.logged)
-  console.log('Route Guard:', to.name, 'isAllow:', isAllow, 'redirectRouteName:', redirectRouteName, 'params:', params);
+  console.log('ACL Check:', to.name, isAllow, redirectRouteName, params)
   if (isAllow) {
-    next();
+    next()
   } else {
     if (params) {
       // @ts-ignore
-      next({ name: redirectRouteName, params: params });
+      next({ name: redirectRouteName, params: params })
     } else {
-      next({ name: redirectRouteName });
+      next({ name: redirectRouteName })
     }
   }
-});
+})
 
 export default router
