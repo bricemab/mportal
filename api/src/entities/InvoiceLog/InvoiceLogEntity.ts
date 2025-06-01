@@ -1,15 +1,15 @@
 import { Entity, Column, ManyToOne, OneToMany, JoinColumn } from "typeorm";
 import AbstractEntity from "../AbstractEntity";
-import { InvoiceLogCode } from "./InvoiceLogCode";
 import { InvoiceEntity } from "../Invoice/InvoiceEntity";
 import { ClientEntity } from "../Client/ClientEntity";
+import { InvoiceState } from "../Invoice/InvoiceState";
 
 @Entity("invoice_log")
 export class InvoiceLogEntity extends AbstractEntity {
   protected _keepHistory = false;
 
   @Column({ name: "code", type: "varchar", nullable: false })
-  code: InvoiceLogCode;
+  code: InvoiceState;
 
   @Column({ name: "details", type: "varchar", nullable: true })
   details: string;

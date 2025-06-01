@@ -1,6 +1,6 @@
-import { ClientType } from '@/types/ClientType.ts'
-import { InvoiceLogType } from '@/types/InvoiceLogType.ts'
-import { InvoiceServiceType } from '@/types/InvoiceServiceType.ts'
+import { type ClientType } from '@/types/ClientType.ts'
+import { type InvoiceLogType } from '@/types/InvoiceLogType.ts'
+import { type InvoiceServiceType } from '@/types/InvoiceServiceType.ts'
 
 export interface InvoiceType {
   id: number
@@ -12,6 +12,8 @@ export interface InvoiceType {
 }
 
 export enum InvoiceState {
+  CREATED = 'CREATED',
+  UPDATED = 'UPDATED',
   GENERATED = 'GENERATED',
   SENT = 'SENT',
   PAID = 'PAID',

@@ -8,7 +8,6 @@ import { InvoiceState } from "../entities/Invoice/InvoiceState";
 import { InvoiceServiceEntity } from "../entities/InvoiceService/InvoiceServiceEntity";
 import { ServiceEntity } from "../entities/Service/ServiceEntity";
 import { InvoiceLogEntity } from "../entities/InvoiceLog/InvoiceLogEntity";
-import { InvoiceLogCode } from "../entities/InvoiceLog/InvoiceLogCode";
 import SettingManager from "../entities/Setting/SettingManager";
 
 const InvoiceRouter = Router();
@@ -151,8 +150,8 @@ RequestManager.post(
       const invoiceLogs = new InvoiceLogEntity();
       invoiceLogs.invoice = invoice;
       invoiceLogs.client = client;
-      invoiceLogs.code = InvoiceLogCode.CREATED;
-      invoiceLogs.details = `Invoice ${invoice.number} has been created`;
+      invoiceLogs.code = InvoiceState.CREATED;
+      invoiceLogs.details = `Invoice ${invoice.number} has been created by ${request.user?.firstname}`;
       await invoiceLogs.save();
       return RequestManager.sendResponse(response, {
         success: true,
@@ -245,14 +244,83 @@ RequestManager.post(
       const log = new InvoiceLogEntity();
       log.invoice = invoice;
       log.client = client;
-      log.code = InvoiceLogCode.UPDATED;
-      log.details = `Invoice ${invoice.number} has been updated`;
+      log.code = InvoiceState.UPDATED;
+      log.details = `Invoice ${invoice.number} has been updated by ${request.user?.firstname}`;
       await log.save();
 
       return RequestManager.sendResponse(response, {
         success: true,
         data: {
           invoice,
+        },
+      });
+    },
+  ),
+);
+
+RequestManager.post(
+  InvoiceRouter,
+  "/change-state",
+  true,
+  RequestManager.asyncResolver(
+    async (
+      request: ApplicationRequest<{
+        token: string;
+        data: {
+          id: number;
+          state: InvoiceState;
+        };
+      }>,
+      response: Response,
+    ) => {
+      if (!request.body.data || !request.body.data.id) {
+        return RequestManager.sendResponse(response, {
+          success: false,
+          error: {
+            code: GeneralErrors.INVALID_REQUEST,
+            message: "Missing required fields",
+          },
+        });
+      }
+      const { id } = request.body.data;
+
+      const invoice = await InvoiceEntity.findOne({
+        where: { id },
+        relations: {
+          client: true,
+        },
+      });
+      if (!invoice) {
+        return RequestManager.sendResponse(response, {
+          success: false,
+          error: {
+            code: GeneralErrors.OBJECT_NOT_FOUND_IN_DATABASE,
+            message: "Invoice not found",
+          },
+        });
+      }
+      const { state } = request.body.data;
+      if (!Object.values(InvoiceState).includes(state)) {
+        return RequestManager.sendResponse(response, {
+          success: false,
+          error: {
+            code: GeneralErrors.INVALID_REQUEST,
+            message: "Invalid state",
+          },
+        });
+      }
+      invoice.state = state;
+      await invoice.save();
+      const invoiceLog = new InvoiceLogEntity();
+      invoiceLog.invoice = invoice;
+      invoiceLog.client = invoice.client;
+      invoiceLog.code = state;
+      invoiceLog.details = `Invoice ${invoice.number} state changed to ${state} by ${request.user?.firstname}`;
+      await invoiceLog.save();
+      return RequestManager.sendResponse(response, {
+        success: true,
+        data: {
+          log: invoiceLog.toJSON(),
         },
       });
     },

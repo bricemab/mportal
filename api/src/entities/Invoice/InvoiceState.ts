@@ -1,4 +1,6 @@
 export enum InvoiceState {
+  CREATED = "CREATED",
+  UPDATED = "UPDATED",
   GENERATED = "GENERATED",
   SENT = "SENT",
   PAID = "PAID",

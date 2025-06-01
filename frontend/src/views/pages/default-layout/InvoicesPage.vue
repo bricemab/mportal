@@ -11,6 +11,8 @@ import Utils from '@/utils/Utils.ts'
 import { toast } from 'vue3-toastify'
 import type { InvoicePage } from '@/types/InvoiceType.ts'
 import dayjs from 'dayjs'
+import { InvoiceState } from '@/types/InvoiceType.ts'
+import type { InvoiceLogType } from '@/types/InvoiceLogType.ts'
 
 const invoices = ref<InvoicePage[]>([])
 
@@ -21,6 +23,28 @@ const isDeleteOpen = ref(false)
 const isEditOpen = ref(false)
 const isMoreInfoOpen = ref(false)
 const isCreateOpen = ref(false)
+
+const stateStyles: Record<string, string> = {
+  CREATED: 'text-blue-600',
+  UPDATED: 'text-yellow-600',
+  GENERATED: 'text-indigo-600',
+  SENT: 'text-teal-600',
+  PAID: 'text-green-600',
+  CANCELLED: 'text-red-600',
+  UNPAID: 'text-orange-600',
+}
+
+const invoiceStateLabels: Record<string, string> = {
+  CREATED: 'Créé',
+  UPDATED: 'Mis à jour',
+  GENERATED: 'Généré',
+  SENT: 'Envoyé',
+  PAID: 'Payé',
+  CANCELLED: 'Annulé',
+  UNPAID: 'Impayé',
+}
+
+const invoiceStates = Object.values(InvoiceState)
 
 const selectedInvoice = ref<InvoicePage | null>(null)
 
@@ -59,6 +83,24 @@ async function handleEditSubmit(updatedClient: ClientType) {
 async function handleCreateSubmit(newClient: ClientType) {
   isCreateOpen.value = false
   await fetchList()
+}
+
+const updateInvoiceState = async (invoice: InvoicePage, newState: string) => {
+  const response = await Utils.postEncodedToBackend<{ log: InvoiceLogType }>(
+    '/invoices/change-state',
+    {
+      id: invoice.id,
+      state: newState,
+    },
+  )
+
+  if (!response.success) {
+    toast.error('Erreur lors de la mise à jour du statut.')
+    return
+  }
+
+  await fetchList()
+  toast.success('Statut mis à jour avec succès.')
 }
 
 const fetchList = async () => {
@@ -100,6 +142,7 @@ onMounted(async () => {
           <th>Montant</th>
           <th>Date dernière action</th>
           <th>Statut</th>
+          <th></th>
         </tr>
       </thead>
       <tbody>
@@ -117,6 +160,19 @@ onMounted(async () => {
               dayjs(invoice.logs[invoice.logs.length - 1].createdAt).format('DD.MM.YYYY HH:mm:ss')
             }}
           </td>
+          <td>
+            <select
+              v-model="invoice.state"
+              class="rounded px-0 py-1 text-sm font-medium"
+              :class="'text-gray-100 bg-lightBlack'"
+              @change="updateInvoiceState(invoice, invoice.state)"
+            >
+              <option v-for="state in invoiceStates" :key="'state-' + state" :value="state">
+                {{ invoiceStateLabels[state] || state }}
+              </option>
+            </select>
+          </td>
+
           <td class="space-x-3 text-lg">
             <button
               class="text-white hover:text-blue-500"
