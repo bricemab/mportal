@@ -1,28 +1,24 @@
 <script setup lang="ts">
 import BaseModal from '../BaseModal.vue'
-import type { ClientType } from '@/types/ClientType.ts'
+import type { InvoiceType } from '@/types/InvoiceType.ts'
 
-defineProps<{
-  open: boolean
-  data: ClientType
-}>()
-
+const props = defineProps<{ open: boolean; data: InvoiceType }>()
 const emit = defineEmits(['close'])
+
 const onClose = () => emit('close')
 </script>
 
 <template>
-  <BaseModal :open="open" title="Informations complète du client" @close="onClose">
+  <BaseModal :open="open" title="Informations complètes de la facture" @close="onClose">
     <div class="space-y-2">
-      <p><strong>Nom :</strong> {{ data.firstname + ' ' + data.lastname }}</p>
-      <p><strong>Entreprise :</strong> {{ data.name }}</p>
-      <p><strong>Email :</strong> {{ data.email }}</p>
-      <p>
-        <strong>Adresse :</strong>
-        {{ data.address + ' ' + data.addressNumber + ', ' + data.postalCode + ', ' + data.city }}
-      </p>
-      <p><strong>Téléphone :</strong> {{ data.phoneNumber }}</p>
-      <p><strong>Remarque :</strong> {{ data.remark }}</p>
+      <p><strong>Nom :</strong> {{ data.name }}</p>
+      <p><strong>ID Client :</strong> {{ data.clientId }}</p>
+      <p><strong>ID Service :</strong> {{ data.serviceId }}</p>
+      <p><strong>Quantité :</strong> {{ data.quantity }}</p>
+      <p><strong>Montant :</strong> {{ data.amount }}</p>
+      <p><strong>État :</strong> {{ data.state }}</p>
+      <p><strong>Créée le :</strong> {{ data.createdAt }}</p>
+      <p><strong>Modifiée le :</strong> {{ data.updatedAt }}</p>
     </div>
 
     <template #footer>

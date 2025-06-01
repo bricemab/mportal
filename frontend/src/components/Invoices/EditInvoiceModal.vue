@@ -1,22 +1,16 @@
 <script setup lang="ts">
 import BaseModal from '../BaseModal.vue'
-import { ref, onMounted } from 'vue'
+import { reactive, watch, ref, onMounted } from 'vue'
 import Utils from '@/utils/Utils.ts'
 import { toast } from 'vue3-toastify'
 import type { InvoiceType } from '@/types/InvoiceType.ts'
 import type { ClientType } from '@/types/ClientType.ts'
 import type { ServiceType } from '@/types/ServiceType.ts'
 
-const props = defineProps<{ open: boolean }>()
+const props = defineProps<{ open: boolean; data: InvoiceType }>()
 const emit = defineEmits(['close', 'submit'])
 
-const invoice = ref({
-  name: '',
-  clientId: 0,
-  serviceId: 0,
-  quantity: 1,
-  amount: 0,
-})
+const invoice = reactive({ ...props.data })
 
 const clients = ref<ClientType[]>([])
 const services = ref<ServiceType[]>([])
@@ -33,24 +27,29 @@ const fetchOptions = async () => {
 
 onMounted(fetchOptions)
 
+watch(
+  () => props.data,
+  (val) => Object.assign(invoice, val),
+)
+
 const onClose = () => emit('close')
 
 const onSubmit = async () => {
   const response = await Utils.postEncodedToBackend<{ invoice: InvoiceType }>(
-    '/invoices/create',
-    invoice.value,
+    '/invoices/edit',
+    invoice,
   )
   if (!response.success) {
-    toast.error('Erreur lors de la création de la facture : ' + response.error.message)
+    toast.error('Erreur lors de la modification de la facture : ' + response.error.message)
     return
   }
   emit('submit', response.data.invoice)
-  toast.success('La facture a été créée avec succès !')
+  toast.success('La facture a été modifiée avec succès !')
 }
 </script>
 
 <template>
-  <BaseModal :open="open" title="Créer une nouvelle facture" @close="onClose">
+  <BaseModal :open="open" title="Modifier la facture" @close="onClose">
     <form @submit.prevent="onSubmit" class="space-y-3">
       <input v-model="invoice.name" required placeholder="Nom de la facture" class="custom-input" />
 
