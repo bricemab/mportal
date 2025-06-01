@@ -167,7 +167,12 @@ onMounted(async () => {
               :class="'text-gray-100 bg-lightBlack'"
               @change="updateInvoiceState(invoice, invoice.state)"
             >
-              <option v-for="state in invoiceStates" :key="'state-' + state" :value="state">
+              <option
+                v-for="state in invoiceStates"
+                :key="'state-' + state"
+                :value="state"
+                :disabled="state === 'CREATED' || state === 'UPDATED'"
+              >
                 {{ invoiceStateLabels[state] || state }}
               </option>
             </select>
