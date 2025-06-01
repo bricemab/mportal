@@ -17,7 +17,7 @@ function onClose() {
         <Dialog :open="open" @close="onClose" class="relative z-50">
             <div class="fixed inset-0 bg-black/50 backdrop-blur-sm" aria-hidden="true" />
             <div class="fixed inset-0 flex items-center justify-center p-4">
-                <DialogPanel class="w-full max-w-md rounded-xl bg-lightBlack p-6 text-white space-y-2 shadow-lg">
+                <DialogPanel class="w-full max-w-lg rounded-xl bg-lightBlack p-6 text-white space-y-2 shadow-lg">
                     <DialogTitle class="text-lg font-semibold mb-3">{{ title }}</DialogTitle>
                     <DialogDescription v-if="description" class="text-md text-gray-400">
                         {{ description }}
