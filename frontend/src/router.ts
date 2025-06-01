@@ -8,7 +8,7 @@ import IndexPage from '@/views/pages/default-layout/IndexPage.vue'
 import AclManager from '@/AclManager.ts'
 import ClientsPage from './views/pages/default-layout/ClientsPage.vue'
 import ServicesPage from './views/pages/default-layout/ServicesPage.vue'
-import BillingPage from './views/pages/default-layout/BillingPage.vue'
+import InvoicesPage from './views/pages/default-layout/InvoicesPage.vue'
 
 export const routes: RouteRecordRaw[] = [
   {
@@ -56,9 +56,9 @@ export const routes: RouteRecordRaw[] = [
             meta: { logged: true },
           },
           {
-            path: 'billings',
-            name: 'billing-page',
-            component: BillingPage,
+            path: 'invoices',
+            name: 'invoice-page',
+            component: InvoicesPage,
             meta: { logged: true },
           },
         ],

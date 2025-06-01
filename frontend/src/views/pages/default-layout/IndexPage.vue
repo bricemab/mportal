@@ -134,7 +134,7 @@ const factures = ref([
           <h3 class="font-semibold mb-1">Dernières factures générées</h3>
           <p class="text-sm">Factures ouvertes & fermées</p>
         </div>
-        <router-link to="/billings">
+        <router-link to="/invoices">
           <button class="btn btn-primary flex items-center">
             <i class="bx bx-plus pr-2"></i>
             Voir plus
