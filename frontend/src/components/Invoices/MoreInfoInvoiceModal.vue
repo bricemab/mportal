@@ -1,71 +1,81 @@
 <script setup lang="ts">
 import BaseModal from '../BaseModal.vue'
+import { ref, watch, computed } from 'vue'
+import Utils from '@/utils/Utils.ts'
+import { toast } from 'vue3-toastify'
 import type { InvoicePage } from '@/types/InvoiceType.ts'
-import { reactive, watch } from 'vue'
-import dayjs from 'dayjs'
+import type { ServiceType } from '@/types/ServiceType.ts'
 
-const props = defineProps<{ open: boolean; data: InvoicePage }>()
-
-const invoice = reactive({
-  ...props.data,
-})
-
-const descriptions: Record<string, string> = {
-  CREATED: 'La facture a été créée',
-  UPDATED: 'La facture a été modifiée',
-  GENERATED: 'La facture a été générée',
-  SENT: 'La facture a été envoyée',
-  PAID: 'La facture a été marquée comme payée',
-  CANCELLED: 'La facture a été annulée',
-  UNPAID: 'La facture a été marquée comme impayée',
-}
-
-const iconStyles: Record<string, { icon: string; text: string; bg: string }> = {
-  CREATED: { icon: 'bx-plus-circle', text: 'text-blue-600', bg: 'bg-blue-100' },
-  UPDATED: { icon: 'bx-edit', text: 'text-yellow-600', bg: 'bg-yellow-100' },
-  GENERATED: { icon: 'bx-receipt', text: 'text-indigo-600', bg: 'bg-indigo-100' },
-  SENT: { icon: 'bx-send', text: 'text-teal-600', bg: 'bg-teal-100' },
-  PAID: { icon: 'bx-check-circle', text: 'text-green-600', bg: 'bg-green-100' },
-  CANCELLED: { icon: 'bx-x-circle', text: 'text-red-600', bg: 'bg-red-100' },
-  UNPAID: { icon: 'bx-error-circle', text: 'text-orange-600', bg: 'bg-orange-100' },
-}
-
-watch(
-  () => props.data,
-  (val) => {
-    Object.assign(invoice, JSON.parse(JSON.stringify(val)))
-    if (!invoice.clientId && invoice.client && invoice.client.id) {
-      invoice.clientId = invoice.client.id
-    }
-  },
-  { immediate: true },
-)
+const props = defineProps<{
+  open: boolean
+  data: InvoicePage
+}>()
 
 const emit = defineEmits(['close'])
-
 const onClose = () => emit('close')
+
+// Liste des services chargée depuis backend
+const services = ref<ServiceType[]>([])
+
+// Fonction pour charger les services
+const fetchServices = async () => {
+  const res = await Utils.postEncodedToBackend<{ services: ServiceType[] }>('/services/list')
+  if (res.success && res.data) {
+    services.value = res.data.services
+  } else {
+    toast.error('Erreur lors du chargement des services.')
+  }
+}
+
+// Charger les services à l'ouverture de la modal
+watch(
+  () => props.open,
+  (isOpen) => {
+    if (isOpen) fetchServices()
+  },
+  { immediate: true }
+)
+
+// Fonction utilitaire pour retrouver le nom du service via son id
+const getServiceName = (serviceId: number) => {
+  const service = services.value.find(s => s.id === serviceId)
+  return service ? service.name : 'Service inconnu'
+}
+
+// Calculer le total si data.total est null ou indéfini
+const computedTotal = computed(() => {
+  if (props.data.total != null) {
+    return props.data.total
+  }
+  if (!props.data.services) return 0
+  return props.data.services.reduce((acc, s) => acc + s.amount * s.quantity, 0)
+})
 </script>
 
 <template>
-  <BaseModal :open="open" title="Informations complètes de la facture" @close="onClose">
-    <div class="space-y-2">
-      <div class="space-y-4">
-        <div v-for="log in invoice.logs" :key="log.id" class="flex items-start space-x-3">
-          <div
-            class="rounded-full p-2 flex items-center justify-center"
-            :class="iconStyles[log.code].bg"
-          >
-            <i :class="['bx', iconStyles[log.code].icon, iconStyles[log.code].text, 'text-xl']"></i>
-          </div>
+  <BaseModal :open="open" title="Informations complète de la facture" @close="onClose" size="lg">
+    <div class="space-y-3">
+      <p><strong>Nom de la facture :</strong> {{ data.name }}</p>
 
-          <div class="flex flex-col">
-            <div class="font-semibold" v-text="descriptions[log.code]"></div>
-            <div class="text-sm text-gray-400">
-              {{ dayjs(log.createdAt).format('DD.MM.YYYY HH:mm:ss') }}
-            </div>
-          </div>
-        </div>
+      <p>
+        <strong>Client :</strong>
+        {{ data.client ? (data.client.name + ' (' + data.client.firstname + ' ' + data.client.lastname + ')') : 'Non renseigné' }}
+      </p>
+
+      <p><strong>Date de création :</strong> {{ new Date(data.createdAt).toLocaleDateString() }}</p>
+      <p><strong>Date d'échéance :</strong> {{ data.dueDate ? new Date(data.dueDate).toLocaleDateString() : 'Non renseignée' }}</p>
+
+      <div>
+        <strong>Services facturés :</strong>
+        <ul class="list-inside max-h-48 overflow-auto">
+          <li v-for="(serviceLine, index) in data.services" :key="index">
+            {{ getServiceName(serviceLine.serviceId) }} - Quantité : {{ serviceLine.quantity }} - Prix unitaire : {{ serviceLine.amount.toFixed(2) }} CHF
+          </li>
+          <li v-if="!data.services || data.services.length === 0">Aucun service facturé.</li>
+        </ul>
       </div>
+
+      <p><strong>Total :</strong> {{ computedTotal.toFixed(2) }} CHF</p>
     </div>
 
     <template #footer>

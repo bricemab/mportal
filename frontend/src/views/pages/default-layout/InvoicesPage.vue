@@ -4,7 +4,9 @@ import ThePagination from '@/components/ThePagination.vue'
 
 import DeleteInvoiceModal from '@/components/Invoices/DeleteInvoiceModal.vue'
 import EditInvoiceModal from '@/components/Invoices/EditInvoiceModal.vue'
+import StatusHistoryInvoiceModal from '@/components/Invoices/StatusHistoryInvoiceModal.vue'
 import MoreInfoInvoiceModal from '@/components/Invoices/MoreInfoInvoiceModal.vue'
+
 import CreateInvoiceModal from '@/components/Invoices/CreateInvoiceModal.vue'
 import type { ClientType } from '@/types/ClientType.ts'
 import Utils from '@/utils/Utils.ts'
@@ -27,8 +29,9 @@ const paginatedItems = ref<InvoicePage[]>([])
 
 const isDeleteOpen = ref(false)
 const isEditOpen = ref(false)
-const isMoreInfoOpen = ref(false)
+const isStatusHistoryOpen = ref(false)
 const isCreateOpen = ref(false)
+const isMoreInfoOpen = ref(false)
 
 const stateStyles: Record<string, string> = {
   CREATED: 'text-blue-600',
@@ -66,6 +69,11 @@ function openDeleteModal(invoice: InvoicePage) {
 function openEditModal(invoice: InvoicePage) {
   selectedInvoice.value = invoice
   isEditOpen.value = true
+}
+
+function openStatusHistory(invoice: InvoicePage) {
+  selectedInvoice.value = invoice
+  isStatusHistoryOpen.value = true
 }
 
 function openMoreInfoModal(invoice: InvoicePage) {
@@ -216,11 +224,11 @@ const filteredInvoices = computed(() => {
             </select>
           </td>
           <td class="space-x-3 text-lg">
-            <button class="text-white hover:text-blue-500" title="Voir les détails">
+            <button class="text-white hover:text-blue-500" title="Voir les détails" @click="openMoreInfoModal(invoice)">
               <i class="bx bx-info-circle"></i>
             </button>
             <button class="text-white hover:text-amber-500" title="Historique des actions"
-              @click="openMoreInfoModal(invoice)">
+              @click="openStatusHistory(invoice)">
               <i class="bx bx-line-chart"></i>
             </button>
             <button class="text-white hover:text-yellow-500" title="Modifier" @click="openEditModal(invoice)">
@@ -244,7 +252,10 @@ const filteredInvoices = computed(() => {
       @confirm="handleDeleteConfirm" />
     <EditInvoiceModal :open="isEditOpen" :data="selectedInvoice!" @close="isEditOpen = false"
       @submit="handleEditSubmit" />
-    <MoreInfoInvoiceModal :open="isMoreInfoOpen" :data="selectedInvoice!" @close="isMoreInfoOpen = false" />
+    <StatusHistoryInvoiceModal :open="isStatusHistoryOpen" :data="selectedInvoice!"
+      @close="isStatusHistoryOpen = false" />
     <CreateInvoiceModal :open="isCreateOpen" @close="isCreateOpen = false" @submit="handleCreateSubmit" />
+    <MoreInfoInvoiceModal :open="isMoreInfoOpen" :data="selectedInvoice!" @close="isMoreInfoOpen = false" />
+
   </div>
 </template>
