@@ -141,7 +141,7 @@ RequestManager.post(
       invoice.name = name;
       invoice.number = await SettingManager.getNextInvoiceNumber();
       invoice.client = client;
-      invoice.state = InvoiceState.GENERATED;
+      invoice.state = InvoiceState.CREATED;
       await invoice.save();
       for (const serviceData of services) {
         const service = await ServiceEntity.findOne({
@@ -233,6 +233,7 @@ RequestManager.post(
       }
 
       invoice.name = name;
+      invoice.state = InvoiceState.UPDATED;
       invoice.client = client;
       await invoice.save();
 
