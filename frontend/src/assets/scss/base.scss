@@ -56,6 +56,10 @@
     @apply w-full px-4 py-2 bg-lightBlack border border-white/50 rounded-md
   }
 
+  select {
+    @apply bg-lightBlack
+  }
+
   .my-toast {
     @apply bg-white text-black border border-neutral-300 rounded-2xl px-6 py-4 shadow-xl font-outfit text-base;
   }

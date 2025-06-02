@@ -5,7 +5,7 @@ import { GeneralErrors } from '@/types/BackendErrors.ts'
 import router from '@/router.ts'
 import { toast } from 'vue3-toastify'
 
-const email = ref('bricemabi@gmail.com')
+const email = ref('theo.mayoraz02@gmail.com')
 const password = ref('1')
 
 async function handleLogin() {
