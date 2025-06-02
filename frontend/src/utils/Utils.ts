@@ -78,11 +78,6 @@ export default class Utils {
         message = 'Le serveur est hors service'
         Utils.alertError('Erreur', message)
         break
-      case WsErrors.WS_JWT_TOKEN:
-        message = "Nous n'avons pas réussi à vous connecter au websocket"
-        reason = error.details
-        Utils.alertError('Erreur', message, reason)
-        break
       case GeneralErrors.UNHANDLED_ERROR:
       default:
         Utils.alertError('Erreur', 'Une erreur inattendue est survenue')

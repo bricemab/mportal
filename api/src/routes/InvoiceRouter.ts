@@ -9,6 +9,13 @@ import { InvoiceServiceEntity } from "../entities/InvoiceService/InvoiceServiceE
 import { ServiceEntity } from "../entities/Service/ServiceEntity";
 import { InvoiceLogEntity } from "../entities/InvoiceLog/InvoiceLogEntity";
 import SettingManager from "../entities/Setting/SettingManager";
+import { createWriteStream } from "node:fs";
+
+import PDFDocument from "pdfkit";
+import { SwissQRBill } from "swissqrbill/pdf";
+import { Data } from "swissqrbill/types";
+import Config from "../config/config";
+import config from "../config/config";
 
 const InvoiceRouter = Router();
 
@@ -406,6 +413,10 @@ RequestManager.post(
 
       const invoice = await InvoiceEntity.findOne({
         where: { id },
+        relations: {
+          invoiceServices: true,
+          client: true,
+        },
       });
       if (!invoice) {
         return RequestManager.sendResponse(response, {
@@ -423,11 +434,46 @@ RequestManager.post(
         invoice.state = InvoiceState.GENERATED;
         await invoice.save();
       }
-      // todo: generate PDF
-      return RequestManager.sendResponse(response, {
-        success: true,
-        data: {},
+      let amount = 0;
+      invoice.invoiceServices.map((service) => {
+        amount += service.amount * service.quantity;
       });
+
+      const data: Data = {
+        amount,
+        creditor: {
+          account: config.mdev.bank.iban,
+          address: config.mdev.bank.address,
+          buildingNumber: config.mdev.bank.number,
+          city: config.mdev.bank.city,
+          country: config.mdev.bank.country,
+          name: config.mdev.bank.name,
+          zip: config.mdev.bank.postalCode,
+        },
+        currency: "CHF",
+        debtor: {
+          address: invoice.client.address,
+          buildingNumber: invoice.client.addressNumber,
+          city: invoice.client.city,
+          country: "CH",
+          name: invoice.client.name,
+          zip: invoice.client.postalCode,
+        },
+        reference: "21 00000 00003 13947 14300 09017",
+      };
+
+      const pdf = new PDFDocument({ size: "A4" });
+      const qrBill = new SwissQRBill(data);
+      qrBill.attachTo(pdf);
+
+      response.setHeader("Content-Type", "application/pdf");
+      response.setHeader(
+        "Content-Disposition",
+        'attachment; filename="qr-bill.pdf"',
+      );
+
+      pdf.pipe(response);
+      pdf.end();
     },
   ),
 );

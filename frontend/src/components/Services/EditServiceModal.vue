@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import BaseModal from '../BaseModal.vue'
 import { reactive, watch } from 'vue'
-import { ServiceType, ServiceTypeType } from '@/types/ServiceType'
+import { type ServiceType, ServiceTypeType } from '@/types/ServiceType'
 import Utils from '@/utils/Utils.ts'
-import { toast } from 'vue3-toastify';
+import { toast } from 'vue3-toastify'
 
 const props = defineProps<{
   open: boolean
@@ -33,10 +33,10 @@ const onSubmit = async () => {
     service,
   )
   if (!response.success) {
-    toast.error("Erreur lors de la modification du service : " + response.error.message);
+    return toast.error('Erreur lors de la modification du service : ' + response.error.message)
   }
   emit('submit', response.data.service)
-  toast.success("Le service a été modifié avec succès !");
+  toast.success('Le service a été modifié avec succès !')
 }
 </script>
 

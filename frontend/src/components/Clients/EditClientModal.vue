@@ -23,7 +23,7 @@ const onClose = () => emit('close')
 const onSubmit = async () => {
   const response = await Utils.postEncodedToBackend<{ client: ClientType }>('/clients/edit', client)
   if (!response.success) {
-    toast.error('Erreur lors de la modification du client : ' + response.error.message)
+    return toast.error('Erreur lors de la modification du client : ' + response.error.message)
   }
   emit('submit', response.data.client)
   toast.success('Le client a été modifié avec succès !')

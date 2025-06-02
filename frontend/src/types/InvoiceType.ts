@@ -26,6 +26,7 @@ export interface InvoicePage {
   name: string
   number: string
   amount: number
+  state: InvoiceState
   client: ClientType
   logs: InvoiceLogType[]
   services: InvoiceServiceType[]

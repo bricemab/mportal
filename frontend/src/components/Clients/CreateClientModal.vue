@@ -31,7 +31,7 @@ const onSubmit = async () => {
     client.value,
   )
   if (!response.success) {
-    toast.error('Erreur lors de la création du client : ' + response.error.message)
+    return toast.error('Erreur lors de la création du client : ' + response.error.message)
   }
   emit('submit', response.data.client)
   toast.success('Le client a été créé avec succès !')
