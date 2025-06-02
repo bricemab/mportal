@@ -6,7 +6,7 @@ import dayjs from 'dayjs'
 
 const props = defineProps<{ open: boolean; data: InvoicePage }>()
 
-const invoice = reactive({
+const invoice = reactive<InvoicePage>({
   ...props.data,
 })
 
@@ -34,9 +34,6 @@ watch(
   () => props.data,
   (val) => {
     Object.assign(invoice, JSON.parse(JSON.stringify(val)))
-    if (!invoice.clientId && invoice.client && invoice.client.id) {
-      invoice.clientId = invoice.client.id
-    }
   },
   { immediate: true },
 )

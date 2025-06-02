@@ -2,7 +2,7 @@
 import BaseModal from '../BaseModal.vue'
 import type { ServiceType } from '@/types/ServiceType.ts'
 import Utils from '@/utils/Utils.ts'
-import { toast } from 'vue3-toastify';
+import { toast } from 'vue3-toastify'
 
 const props = defineProps<{
   open: boolean
@@ -17,10 +17,10 @@ const onConfirm = async () => {
     id: props.data.id,
   })
   if (!response.success) {
-    toast.error("Erreur lors de la suppression du service :" + response.error.message);
+    return toast.error('Erreur lors de la suppression du service :' + response.error.message)
   }
   emit('confirm')
-  toast.success("Le service a été supprimé avec succès !");
+  toast.success('Le service a été supprimé avec succès !')
 }
 </script>
 

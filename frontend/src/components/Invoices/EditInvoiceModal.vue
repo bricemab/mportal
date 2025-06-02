@@ -10,7 +10,7 @@ import type { ServiceType } from '@/types/ServiceType.ts'
 const props = defineProps<{ open: boolean; data: InvoicePage }>()
 const emit = defineEmits(['close', 'submit'])
 
-const invoice = reactive({
+const invoice = reactive<InvoicePage>({
   ...props.data,
 })
 
@@ -18,9 +18,6 @@ watch(
   () => props.data,
   (val) => {
     Object.assign(invoice, JSON.parse(JSON.stringify(val)))
-    if (!invoice.clientId && invoice.client && invoice.client.id) {
-      invoice.clientId = invoice.client.id
-    }
   },
   { immediate: true },
 )
@@ -30,8 +27,8 @@ const services = ref<ServiceType[]>([])
 
 const fetchOptions = async () => {
   const [clientRes, serviceRes] = await Promise.all([
-    Utils.postEncodedToBackend<{ clients: ClientType[] }>('/clients/list'),
-    Utils.postEncodedToBackend<{ services: ServiceType[] }>('/services/list'),
+    Utils.postEncodedToBackend<{ clients: ClientType[] }>('/clients/list', {}),
+    Utils.postEncodedToBackend<{ services: ServiceType[] }>('/services/list', {}),
   ])
 
   if (clientRes.success && clientRes.data) {
@@ -60,7 +57,7 @@ const onClose = () => emit('close')
 const onSubmit = async () => {
   const payload = {
     name: invoice.name,
-    clientId: Number(invoice.clientId),
+    clientId: Number(invoice.client.id),
     services: invoice.services.map((s) => ({
       serviceId: Number(s.serviceId),
       quantity: Number(s.quantity),
@@ -83,11 +80,12 @@ const onSubmit = async () => {
 }
 
 const addServiceLine = () => {
-  invoice.value.services.push({ serviceId: 0, quantity: 1, amount: 0 })
+  // @ts-ignore
+  invoice.services.push({ serviceId: 0, quantity: 1, amount: 0 })
 }
 
 const removeServiceLine = (index: number) => {
-  invoice.value.services.splice(index, 1)
+  invoice.services.splice(index, 1)
 }
 </script>
 
@@ -104,7 +102,7 @@ const removeServiceLine = (index: number) => {
         class="custom-input w-full"
       />
 
-      <select v-model="invoice.clientId" required class="custom-input w-full">
+      <select v-model="invoice.client.id" required class="custom-input w-full">
         <option disabled value="0">Sélectionnez un client</option>
         <option v-if="clients.length === 0" disabled>Aucun client disponible</option>
         <option v-for="client in clients" :key="client.id" :value="client.id">
@@ -164,7 +162,7 @@ const removeServiceLine = (index: number) => {
 
       <div class="flex justify-end space-x-3 pt-4">
         <button @click="onClose" type="button" class="btn btn-secondary">Annuler</button>
-        <button type="submit" class="btn btn-primary">Générer la facture</button>
+        <button type="submit" class="btn btn-primary">Modifier la facture</button>
       </div>
     </form>
   </BaseModal>
