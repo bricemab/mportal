@@ -34,9 +34,6 @@ watch(
   () => props.data,
   (val) => {
     Object.assign(invoice, JSON.parse(JSON.stringify(val)))
-    if (!invoice.clientId && invoice.client && invoice.client.id) {
-      invoice.clientId = invoice.client.id
-    }
   },
   { immediate: true },
 )

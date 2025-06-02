@@ -138,7 +138,7 @@ onMounted(async () => {
 
 // Filtres
 const selectedSort = ref('')
-const selectedClients = ref<string[]>([])
+const selectedClients = ref<number[]>([])
 const selectedInvoiceNumbers = ref<string[]>([])
 const selectedInvoiceNames = ref<string[]>([])
 const selectedInvoiceStates = ref<string[]>([])
@@ -158,7 +158,7 @@ const applyInvoiceNameFilter = () => {}
 const filteredInvoices = computed(() => {
   return invoices.value
     .filter((i: InvoicePage) => {
-      if (selectedClients.value.length > 0 && !selectedClients.value.includes(String(i.client.id)))
+      if (selectedClients.value.length > 0 && !selectedClients.value.includes(i.client.id))
         return false
       if (
         selectedInvoiceNumbers.value.length > 0 &&

@@ -19,7 +19,7 @@ const services = ref<ServiceType[]>([])
 
 // Fonction pour charger les services
 const fetchServices = async () => {
-  const res = await Utils.postEncodedToBackend<{ services: ServiceType[] }>('/services/list')
+  const res = await Utils.postEncodedToBackend<{ services: ServiceType[] }>('/services/list', {})
   if (res.success && res.data) {
     services.value = res.data.services
   } else {
@@ -33,20 +33,17 @@ watch(
   (isOpen) => {
     if (isOpen) fetchServices()
   },
-  { immediate: true }
+  { immediate: true },
 )
 
 // Fonction utilitaire pour retrouver le nom du service via son id
 const getServiceName = (serviceId: number) => {
-  const service = services.value.find(s => s.id === serviceId)
+  const service = services.value.find((s) => s.id === serviceId)
   return service ? service.name : 'Service inconnu'
 }
 
 // Calculer le total si data.total est null ou indéfini
 const computedTotal = computed(() => {
-  if (props.data.total != null) {
-    return props.data.total
-  }
   if (!props.data.services) return 0
   return props.data.services.reduce((acc, s) => acc + s.amount * s.quantity, 0)
 })
@@ -59,17 +56,25 @@ const computedTotal = computed(() => {
 
       <p>
         <strong>Client :</strong>
-        {{ data.client ? (data.client.name + ' (' + data.client.firstname + ' ' + data.client.lastname + ')') : 'Non renseigné' }}
+        {{
+          data.client
+            ? data.client.name + ' (' + data.client.firstname + ' ' + data.client.lastname + ')'
+            : 'Non renseigné'
+        }}
       </p>
 
       <p><strong>Date de création :</strong> {{ new Date(data.createdAt).toLocaleDateString() }}</p>
-      <p><strong>Date d'échéance :</strong> {{ data.dueDate ? new Date(data.dueDate).toLocaleDateString() : 'Non renseignée' }}</p>
+      <p>
+        <strong>Date d'échéance :</strong>
+        {{ data.dueAt ? new Date(data.dueAt).toLocaleDateString() : 'Non renseignée' }}
+      </p>
 
       <div>
         <strong>Services facturés :</strong>
         <ul class="list-inside max-h-48 overflow-auto">
           <li v-for="(serviceLine, index) in data.services" :key="index">
-            {{ getServiceName(serviceLine.serviceId) }} - Quantité : {{ serviceLine.quantity }} - Prix unitaire : {{ serviceLine.amount.toFixed(2) }} CHF
+            {{ getServiceName(serviceLine.serviceId) }} - Quantité : {{ serviceLine.quantity }} -
+            Prix unitaire : {{ serviceLine.amount.toFixed(2) }} CHF
           </li>
           <li v-if="!data.services || data.services.length === 0">Aucun service facturé.</li>
         </ul>

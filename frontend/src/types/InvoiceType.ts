@@ -7,7 +7,7 @@ export interface InvoiceType {
   name: string
   clientId: number
   state: InvoiceState
-  dueAt: string
+  dueAt: string | null
   createdAt: string
   updatedAt: string
 }
@@ -31,7 +31,7 @@ export interface InvoicePage {
   client: ClientType
   logs: InvoiceLogType[]
   services: InvoiceServiceType[]
-  dueAt: string
+  dueAt: string | null
   createdAt: string
   updatedAt: string
 }
