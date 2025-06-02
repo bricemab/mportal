@@ -128,7 +128,7 @@ const fetchList = async () => {
   }
 }
 const downloadPdf = async (invoice: InvoicePage) => {
-  await Utils.downloadPdf('/invoices/generate', { id: invoice.id }, invoice.name)
+  await Utils.downloadPdf('/invoices/generate', { id: invoice.id }, invoice.number)
   await fetchList()
 }
 
