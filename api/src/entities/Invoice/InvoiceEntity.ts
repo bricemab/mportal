@@ -16,6 +16,9 @@ export class InvoiceEntity extends AbstractEntity {
   @Column({ name: "state", type: "varchar", nullable: false })
   state: InvoiceState;
 
+  @Column({ name: "due_at", type: "datetime", nullable: true })
+  dueAt: string;
+
   @Column({ name: "archived", type: "tinyint", default: 0 })
   archived: boolean;
 

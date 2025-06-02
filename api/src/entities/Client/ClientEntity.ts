@@ -20,11 +20,11 @@ export class ClientEntity extends AbstractEntity {
   @Column({ name: "address", type: "varchar", nullable: true })
   address: string;
 
-  @Column({ name: "addressNumber", type: "varchar", nullable: true })
-  addressNumber: string;
+  @Column({ name: "addressNumber", type: "integer", nullable: true })
+  addressNumber: number;
 
-  @Column({ name: "postalCode", type: "varchar", nullable: true })
-  postalCode: string;
+  @Column({ name: "postalCode", type: "integer", nullable: true })
+  postalCode: number;
 
   @Column({ name: "city", type: "varchar", nullable: true })
   city: string;

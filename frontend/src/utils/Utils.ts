@@ -8,8 +8,38 @@ import type { RouteLocationNormalized, RouteRecordRaw } from 'vue-router'
 import { GeneralErrors } from '@/types/BackendErrors.ts'
 import axios from 'axios'
 import { toast } from 'vue3-toastify'
+import Global from '@/utils/Global.ts'
 
 export default class Utils {
+  static async downloadPdf(url: string, params: Object, filename: string): Promise<void> {
+    const token = Utils.buildHmacSha256Signature(params)
+
+    const response = await Global.instanceAxios.post(
+      url,
+      {
+        token,
+        data: params,
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        responseType: 'blob',
+      },
+    )
+
+    const blob = new Blob([response.data], { type: 'application/pdf' })
+    const downloadUrl = window.URL.createObjectURL(blob)
+
+    const a = document.createElement('a')
+    a.href = downloadUrl
+    a.download = filename + '.pdf'
+    document.body.appendChild(a)
+    a.click()
+    a.remove()
+
+    window.URL.revokeObjectURL(downloadUrl)
+  }
   static async checkServerHealth(): Promise<boolean> {
     try {
       const response = await axios.get(config.api.endpoint + '/health', { timeout: 2000 })
