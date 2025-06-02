@@ -5,8 +5,8 @@ import { GeneralErrors } from '@/types/BackendErrors.ts'
 import router from '@/router.ts'
 import { toast } from 'vue3-toastify'
 
-const email = ref('theo.mayoraz02@gmail.com')
-const password = ref('1')
+const email = ref('')
+const password = ref('')
 
 async function handleLogin() {
   const userStore = useUserStore()
