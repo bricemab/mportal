@@ -48,8 +48,8 @@ RequestManager.post(
           phoneNumber: string;
           remark: string;
           address: string;
-          addressNumber: string;
-          postalCode: string;
+          addressNumber: number;
+          postalCode: number;
           city: string;
         };
       }>,
@@ -126,8 +126,8 @@ RequestManager.post(
           phoneNumber: string;
           remark: string;
           address: string;
-          addressNumber: string;
-          postalCode: string;
+          addressNumber: number;
+          postalCode: number;
           city: string;
         };
       }>,

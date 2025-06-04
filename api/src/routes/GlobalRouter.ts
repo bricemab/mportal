@@ -102,8 +102,6 @@ RequestManager.post(
         .orderBy("year", "ASC")
         .getRawMany();
 
-      console.log(result);
-
       return RequestManager.sendResponse(response, {
         success: true,
         data: {
