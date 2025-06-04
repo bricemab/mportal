@@ -95,6 +95,9 @@ const removeServiceLine = (index: number) => {
       @submit.prevent="onSubmit"
       class="max-h-[90vh] overflow-hidden p-4 space-y-4 flex flex-col"
     >
+      <div class="bg-yellow-100 text-yellow-800 px-4 py-3 rounded-md text-sm">
+        ⚠️ Attention : vérifier à changer les informations sur la facture MDev.
+      </div>
       <input
         v-model="invoice.name"
         required

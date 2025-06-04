@@ -4,6 +4,7 @@ import "dayjs/locale/fr";
 import { InvoiceEntity } from "./InvoiceEntity";
 import { ClientEntity } from "../Client/ClientEntity";
 import GlobalStore from "../../utils/GlobalStore";
+import { InvoiceState } from "./InvoiceState";
 
 dayjs.locale("fr");
 
@@ -123,7 +124,7 @@ export async function getBestYearOverall(): Promise<{
   value: number;
 }> {
   const invoices = await InvoiceEntity.find({
-    where: { archived: false },
+    where: { archived: false, state: InvoiceState.PAID },
     relations: { client: true, invoiceServices: true },
   });
 

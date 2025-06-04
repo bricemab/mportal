@@ -6,14 +6,16 @@ import { toast } from 'vue3-toastify'
 import type { InvoiceType } from '@/types/InvoiceType.ts'
 import type { ClientType } from '@/types/ClientType.ts'
 import type { ServiceType } from '@/types/ServiceType.ts'
+import { Switch } from '@headlessui/vue'
 
 const props = defineProps<{ open: boolean }>()
 const emit = defineEmits(['close', 'submit'])
 
+const mustCreateMdevInvoice = ref(false)
 const invoice = ref({
   name: '',
   clientId: 0,
-  services: [{ serviceId: 0, quantity: 1, amount: 0 }],
+  services: [{ serviceId: 0, quantity: 1, amount: 0, mdevAmount: 0 }],
 })
 
 const clients = ref<ClientType[]>([])
@@ -52,10 +54,12 @@ const onSubmit = async () => {
   const payload = {
     name: invoice.value.name,
     clientId: Number(invoice.value.clientId),
+    mustCreateMdevInvoice: mustCreateMdevInvoice.value,
     services: invoice.value.services.map((s) => ({
       serviceId: Number(s.serviceId),
       quantity: Number(s.quantity),
       amount: Number(s.amount),
+      mdevAmount: mustCreateMdevInvoice.value ? Number(s.mdevAmount) : 0,
     })),
   }
 
@@ -104,6 +108,21 @@ const removeServiceLine = (index: number) => {
       </select>
 
       <div class="max-h-64 overflow-y-auto overflow-x-hidden space-y-3 py-1">
+        <div class="flex items-center space-x-2 mb-4">
+          <Switch
+            id="mustCreateMdevInvoice"
+            v-model="mustCreateMdevInvoice"
+            :class="mustCreateMdevInvoice ? 'bg-black' : 'bg-gray-200'"
+            class="relative inline-flex h-6 w-11 items-center rounded-full"
+          >
+            <span class="sr-only">Enable notifications</span>
+            <span
+              :class="mustCreateMdevInvoice ? 'translate-x-6' : 'translate-x-1'"
+              class="inline-block h-4 w-4 transform rounded-full bg-white transition"
+            />
+          </Switch>
+          <label for="mustCreateMdevInvoice">Charge payé par MDev</label>
+        </div>
         <div
           v-for="(line, index) in invoice.services"
           :key="index"
@@ -123,7 +142,7 @@ const removeServiceLine = (index: number) => {
             min="1"
             required
             placeholder="Q."
-            class="custom-input col-span-2"
+            class="custom-input !px-0 text-center col-span-1"
           />
 
           <input
@@ -133,7 +152,18 @@ const removeServiceLine = (index: number) => {
             step="0.01"
             required
             placeholder="P."
-            class="custom-input col-span-3"
+            class="custom-input col-span-2"
+          />
+
+          <input
+            v-if="mustCreateMdevInvoice"
+            v-model.number="line.mdevAmount"
+            type="text"
+            min="0"
+            step="0.01"
+            required
+            placeholder="P. MDev"
+            class="custom-input col-span-2 border border-[#1c73b4] focus:ring-1"
           />
 
           <button
@@ -141,7 +171,7 @@ const removeServiceLine = (index: number) => {
             @click="removeServiceLine(index)"
             v-if="invoice.services.length > 1"
           >
-            <i class="text-red-500 hover:text-red-700 col-span-2 bx bx-trash-alt bx-sm"></i>
+            <i class="text-red-500 hover:text-red-700 col-span-1 bx bx-trash-alt bx-sm"></i>
           </button>
         </div>
       </div>

@@ -92,10 +92,12 @@ RequestManager.post(
         data: {
           name: string;
           clientId: number;
+          mustCreateMdevInvoice: boolean;
           services: {
             serviceId: number;
             amount: number;
             quantity: number;
+            mdevAmount: number;
           }[];
         };
       }>,
@@ -116,7 +118,8 @@ RequestManager.post(
           },
         });
       }
-      const { name, clientId, services } = request.body.data;
+      const { name, clientId, services, mustCreateMdevInvoice } =
+        request.body.data;
       const client = await ClientEntity.findOne({
         where: { id: clientId },
       });
@@ -170,6 +173,45 @@ RequestManager.post(
       invoiceLogs.code = InvoiceState.CREATED;
       invoiceLogs.details = `Invoice ${invoice.number} has been created by ${request.user?.firstname}`;
       await invoiceLogs.save();
+
+      // si on décide de créer une facture MDevelopment pour la factue générée
+      if (mustCreateMdevInvoice) {
+        const invoice = new InvoiceEntity();
+        invoice.name = name;
+        invoice.number = await SettingManager.getNextInvoiceNumber();
+        invoice.reference = computeQRReference(
+          invoice.number.toString().padStart(26, "0"),
+        );
+        invoice.client = (await ClientEntity.findOneBy({
+          id: 1,
+        }))!;
+        invoice.state = InvoiceState.CREATED;
+        await invoice.save();
+        for (const serviceData of services) {
+          if (!serviceData.mdevAmount || serviceData.mdevAmount <= 0) {
+            continue;
+          }
+          const service = await ServiceEntity.findOne({
+            where: { id: serviceData.serviceId },
+          });
+          if (!service) {
+            continue;
+          }
+          const invoiceService = new InvoiceServiceEntity();
+          invoiceService.invoice = invoice;
+          invoiceService.service = service;
+          invoiceService.amount = serviceData.mdevAmount;
+          invoiceService.quantity = serviceData.quantity;
+          await invoiceService.save();
+        }
+        const invoiceLogs = new InvoiceLogEntity();
+        invoiceLogs.invoice = invoice;
+        invoiceLogs.client = client;
+        invoiceLogs.code = InvoiceState.CREATED;
+        invoiceLogs.details = `Invoice MDev ${invoice.number} has been created by ${request.user?.firstname}`;
+        await invoiceLogs.save();
+      }
+
       return RequestManager.sendResponse(response, {
         success: true,
         data: {
