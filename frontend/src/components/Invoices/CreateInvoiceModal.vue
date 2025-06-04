@@ -78,7 +78,7 @@ const onSubmit = async () => {
 }
 
 const addServiceLine = () => {
-  invoice.value.services.push({ serviceId: 0, quantity: 1, amount: 0 })
+  invoice.value.services.push({ serviceId: 0, quantity: 1, amount: 0, mdevAmount: 0 })
 }
 
 const removeServiceLine = (index: number) => {
