@@ -550,7 +550,7 @@ RequestManager.post(
       pdf.pipe(response);
 
       // 1. Logo
-      pdf.image(logoPath, 50, 120, { width: 100 });
+      pdf.image(logoPath, 40, 120, { width: 100 });
 
       // 2. En-tête
       pdf
@@ -574,7 +574,7 @@ RequestManager.post(
 
       // 3. Infos client et facture
       const infoTop = 220;
-      const leftX = 60;
+      const leftX = 50;
       const rightX = 350;
 
       pdf.font("Outfit-Bold").fontSize(9).text("FACTURÉ À", leftX, infoTop);
