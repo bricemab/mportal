@@ -1,16 +1,43 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { Chart as ChartJS, registerables, scales } from 'chart.js'
+import { ref, onMounted, watch } from 'vue'
+import { Chart as ChartJS, registerables } from 'chart.js'
 import { Line } from 'vue-chartjs'
+import Utils from '@/utils/Utils.ts'
+import { toast } from 'vue3-toastify'
+import type { ClientType } from '@/types/ClientType.ts'
+import type { InvoicePage } from '@/types/InvoiceType.ts'
+import dayjs, { Dayjs } from 'dayjs'
 
 ChartJS.register(...registerables)
 
+const isLoading = ref<boolean>(true)
+const selectedYear = ref(dayjs().year())
+const clientsNumber = ref(0)
+const servicesNumber = ref(0)
+const invoicesNumber = ref(0)
+const labelsCA = ref<string[]>([])
+const valuesCA = ref<number[]>([])
+const years = ref<number[]>([])
+const bestMonth = ref<{ year: number; month: string }>({ year: 0, month: '' })
+const bestYear = ref<{ year: number; value: number }>({ year: 0, value: 0 })
+const bestClient = ref<ClientType>()
+
+const invoiceStateLabels: Record<string, string> = {
+  CREATED: 'Créé',
+  UPDATED: 'Mis à jour',
+  GENERATED: 'Généré',
+  SENT: 'Envoyé',
+  PAID: 'Payé',
+  CANCELLED: 'Annulé',
+  UNPAID: 'Impayé',
+}
+
 const chartData = {
-  labels: ['Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'],
+  labels: labelsCA.value,
   datasets: [
     {
       label: "Chiffre d'affaires",
-      data: [10000, 20000, 50000, 80000, 30000, 25000, 50000, 80000],
+      data: valuesCA.value,
       borderColor: '#22c55e',
       backgroundColor: 'rgba(34,197,94,0.2)',
       tension: 0.3,
@@ -34,32 +61,50 @@ const chartOptions = {
   },
 }
 
-const factures = ref([
-  {
-    id: 1,
-    nom: 'Facture rebranding',
-    client: 'Maxime Burri',
-    montant: 800,
-    date: '25/05/2025',
-    statut: 'Payée',
-  },
-  {
-    id: 2,
-    nom: 'Facture rebranding',
-    client: 'Maxime Burri',
-    montant: 800,
-    date: '25/05/2025',
-    statut: 'Impayée',
-  },
-  {
-    id: 3,
-    nom: 'Facture rebranding',
-    client: 'Maxime Burri',
-    montant: 800,
-    date: '25/05/2025',
-    statut: 'Payée',
-  },
-])
+const invoices = ref<InvoicePage[]>([])
+
+const loadDashboardData = async () => {
+  isLoading.value = true
+  const response = await Utils.postEncodedToBackend<{
+    clientsNumber: number
+    servicesNumber: number
+    invoicesNumber: number
+    totalCA: {
+      labels: string[]
+      values: number[]
+    }
+    years: number[]
+    bestMonth: { year: number; month: string }
+    bestYear: { year: number; value: number }
+    bestClient: ClientType
+    invoices: InvoicePage[]
+  }>('/load', {
+    year: selectedYear.value, // <-- passe l'année sélectionnée
+  })
+
+  if (!response.success) {
+    toast.error('Une erreur est survenue lors de la récupération des données.')
+    isLoading.value = false
+    return
+  }
+
+  clientsNumber.value = response.data.clientsNumber
+  servicesNumber.value = response.data.servicesNumber
+  invoicesNumber.value = response.data.invoicesNumber
+  labelsCA.value = response.data.totalCA.labels
+  valuesCA.value = response.data.totalCA.values
+  chartData.labels = labelsCA.value
+  chartData.datasets[0].data = valuesCA.value
+  bestMonth.value = response.data.bestMonth
+  bestYear.value = response.data.bestYear
+  bestClient.value = response.data.bestClient
+  invoices.value = response.data.invoices
+  years.value = response.data.years
+  isLoading.value = false
+}
+
+onMounted(loadDashboardData)
+watch(selectedYear, loadDashboardData)
 </script>
 
 <template>
@@ -72,7 +117,7 @@ const factures = ref([
         </div>
         <div>
           <p class="text-sm">Total de clients</p>
-          <h1>10</h1>
+          <h1>{{ clientsNumber }}</h1>
         </div>
       </div>
       <div class="bg-lightBlack p-6 rounded-xl flex items-center gap-4">
@@ -81,7 +126,7 @@ const factures = ref([
         </div>
         <div>
           <p class="text-sm">Nombre de services</p>
-          <h1>12</h1>
+          <h1>{{ servicesNumber }}</h1>
         </div>
       </div>
       <div class="bg-lightBlack p-6 rounded-xl flex items-center gap-4">
@@ -90,7 +135,7 @@ const factures = ref([
         </div>
         <div>
           <p class="text-sm">Facture générées</p>
-          <h1>189</h1>
+          <h1>{{ invoicesNumber }}</h1>
         </div>
       </div>
     </div>
@@ -99,31 +144,32 @@ const factures = ref([
     <div class="bg-lightBlack p-8 rounded-xl overflow-x-auto">
       <div class="flex justify-between items-center mb-4">
         <h3 class="font-semibold">Évolutions du CA</h3>
-        <select class="bg-lightBlack rounded-md text-sm px-2 py-1">
-          <option>8 derniers mois</option>
-          <option>6 derniers mois</option>
+        <select v-model="selectedYear" class="bg-lightBlack rounded-md text-sm px-2 py-1">
+          <option v-for="year in years" :key="'year-' + year">{{ year }}</option>
         </select>
       </div>
       <div class="h-64">
-        <Line :data="chartData" :options="chartOptions" />
+        <Line v-if="!isLoading" :data="chartData" :options="chartOptions" />
       </div>
     </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
       <div class="bg-lightBlack p-6 rounded-xl">
         <h4 class="mb-4">Meilleur mois</h4>
-        <p class="text-xl font-semibold">Novembre</p>
-        <p class="text-sm">2024</p>
+        <p class="text-xl font-semibold">{{ bestMonth.month }}</p>
+        <p class="text-sm">{{ bestMonth.year }}</p>
       </div>
       <div class="bg-lightBlack p-6 rounded-xl">
         <h4 class="mb-4">Meilleur année</h4>
-        <p class="text-xl font-semibold">2024</p>
-        <p class="text-sm">96K de revenus</p>
+        <p class="text-xl font-semibold">{{ bestYear.year }}</p>
+        <p class="text-sm">{{ bestYear.value }} CHF de revenus</p>
       </div>
       <div class="bg-lightBlack p-6 rounded-xl">
         <h4 class="mb-4">Meilleur client</h4>
-        <p class="text-xl font-semibold">Aude Veillon</p>
-        <p class="text-sm">La Maison du Yoga</p>
+        <p class="text-xl font-semibold">
+          {{ bestClient!.firstname + ' ' + bestClient!.lastname }}
+        </p>
+        <p class="text-sm">{{ bestClient!.name }}</p>
       </div>
     </div>
 
@@ -144,32 +190,40 @@ const factures = ref([
       <table class="w-full text-sm">
         <thead>
           <tr class="text-left border-b border-white">
-            <th class="py-5">Nom de la facture</th>
-            <th>Client</th>
+            <th class="py-5">Client</th>
+            <th>N°</th>
+            <th class="w-[300px]">Référence</th>
+            <th>Nom</th>
             <th>Montant</th>
-            <th>Date</th>
+            <th>Date d'échéance</th>
             <th>Status</th>
+          </tr>
+          <tr
+            v-for="invoice in invoices as InvoicePage[]"
+            :key="invoice.id"
+            class="border-b border-white py-2"
+          >
+            <td>{{ invoice.client.name }}</td>
+            <td class="py-5">{{ invoice.number }}</td>
+            <td>{{ invoice.reference }}</td>
+            <td>{{ invoice.name }}</td>
+            <td>{{ invoice.amount }}</td>
+            <td>
+              {{
+                invoice.dueAt
+                  ? dayjs(invoice.dueAt).format('DD.MM.YYYY HH:mm:ss')
+                  : 'pas encore généré'
+              }}
+            </td>
+            <td>
+              <label class="rounded px-0 py-1 text-sm font-medium text-gray-100 bg-lightBlack">
+                {{ invoiceStateLabels[invoice.state] }}
+              </label>
+            </td>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="facture in factures" :key="facture.id" class="border-b border-white py-2">
-            <td class="py-5">{{ facture.nom }}</td>
-            <td>{{ facture.client }}</td>
-            <td>{{ facture.montant }}.-</td>
-            <td>{{ facture.date }}</td>
-            <td>
-              <span
-                :class="[
-                  facture.statut === 'Impayée'
-                    ? 'bg-red-600 text-red-300'
-                    : 'bg-green-600 text-green-300',
-                  'text-xs px-3 py-1 rounded-md',
-                ]"
-              >
-                {{ facture.statut }}
-              </span>
-            </td>
-          </tr>
+          <tr v-for="invoice in invoices" :key="invoice.id" class="border-b border-white py-2"></tr>
         </tbody>
       </table>
     </div>

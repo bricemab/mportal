@@ -1,21 +1,20 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 
-const { invoiceNumbers, modelValue } = defineProps<{
-  invoiceNumbers: number[]
-  modelValue: number[]
+const { invoiceReferences, modelValue } = defineProps<{
+  invoiceReferences: string[]
+  modelValue: string[]
 }>()
 
 const emit = defineEmits(['update:modelValue', 'apply'])
 
 const isOpen = ref(false)
 const search = ref('')
-const selected = ref<number[]>([])
+const selected = ref<string[]>([])
 
-// Garder ref sur l'élément racine pour gestion clic extérieur
+// Référence au root pour détecter clics extérieurs
 const root = ref<HTMLElement | null>(null)
 
-// Mettre à jour selected si modelValue change (utile à l'initialisation)
 watch(
   () => modelValue,
   () => {
@@ -24,20 +23,21 @@ watch(
   { immediate: true },
 )
 
-// Liste filtrée par recherche
-const filteredNumbers = computed(() =>
-  invoiceNumbers.filter((num) => num.toString().includes(search.value.toLowerCase())),
+const filteredReferences = computed(() =>
+  invoiceReferences.filter((reference) =>
+    reference.toLowerCase().includes(search.value.toLowerCase()),
+  ),
 )
 
-// Sélectionner ou désélectionner un numéro
-const toggleSelect = (num: number) => {
-  if (selected.value.includes(num)) {
-    selected.value = selected.value.filter((n) => n !== num)
+const toggleSelect = (reference: string) => {
+  if (selected.value.includes(reference)) {
+    selected.value = selected.value.filter((n) => n !== reference)
   } else {
-    selected.value.push(num)
+    selected.value.push(reference)
   }
 }
 
+// ✅ Réinitialiser = vider + appliquer
 const reset = () => {
   selected.value = []
   search.value = ''
@@ -46,22 +46,13 @@ const reset = () => {
   isOpen.value = false
 }
 
-// Appliquer la sélection
 const apply = () => {
   emit('update:modelValue', [...selected.value])
   emit('apply')
-  search.value = ''
   isOpen.value = false
 }
 
-// Gérer ouverture (sans réinitialiser avec modelValue)
-const openDropdown = () => {
-  // selected.value = []   <-- ici je supprime la réinitialisation pour garder la sélection
-  search.value = ''
-  isOpen.value = true
-}
-
-// Fermeture au clic en dehors
+// Fermer au clic hors du menu
 const onClickOutside = (event: MouseEvent) => {
   if (isOpen.value && root.value && !root.value.contains(event.target as Node)) {
     isOpen.value = false
@@ -75,20 +66,20 @@ onBeforeUnmount(() => {
   document.removeEventListener('click', onClickOutside)
 })
 
-// Computed pour savoir si filtre actif (au moins 1 sélection)
+// Computed qui indique si le filtre est actif (au moins un élément sélectionné)
 const isActive = computed(() => modelValue.length > 0)
 </script>
 
 <template>
-  <div ref="root" class="relative inline-block w-60">
+  <div ref="root" class="relative inline-block w-84">
     <button
-      @click="openDropdown"
+      @click="isOpen = !isOpen"
       :class="[
         'p-2 rounded bg-dark text-white w-full text-center flex items-center justify-center',
         isActive ? 'border-2 border-white' : 'border border-gray-600',
       ]"
     >
-      <i class="bx bxs-barcode pr-2"></i>Trier par n° de facture
+      <i class="bx bx-receipt pr-2"></i>Trier par référence
     </button>
 
     <div
@@ -98,19 +89,19 @@ const isActive = computed(() => modelValue.length > 0)
       <input
         v-model="search"
         type="text"
-        placeholder="Rechercher un numéro..."
-        class="w-full mb-2 p-1 text-sm rounded bg-dark text-white border border-gray-600"
+        placeholder="Rechercher une référence..."
+        class="w-full mb-2 p-1 text-sm rounded bg-lightBlack text-white border border-gray-600"
         autocomplete="off"
       />
       <div class="max-h-40 overflow-y-auto">
         <div
-          v-for="num in filteredNumbers"
-          :key="num"
+          v-for="reference in filteredReferences"
+          :key="reference"
           class="flex justify-between items-center cursor-pointer hover:bg-gray-700 rounded px-2 py-1 select-none"
-          @click="toggleSelect(num)"
+          @click="toggleSelect(reference)"
         >
-          <span class="text-white text-sm">{{ num }}</span>
-          <i v-if="selected.includes(num)" class="bx bx-check text-white"></i>
+          <span class="text-white">{{ reference }}</span>
+          <i v-if="selected.includes(reference)" class="bx bx-check text-white"></i>
         </div>
       </div>
       <div class="flex justify-end gap-2 mt-3">

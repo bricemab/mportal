@@ -8,7 +8,7 @@ export default class SettingManager {
     });
   }
 
-  static async getNextInvoiceNumber(): Promise<string> {
+  static async getNextInvoiceNumber(): Promise<number> {
     const setting = await SettingManager.getSetting(SettingKey.INVOICE_NUMBER);
     if (!setting) {
       throw new Error(
@@ -16,15 +16,8 @@ export default class SettingManager {
       );
     }
 
-    function invoiceNumber() {
-      const date = new Date();
-      const datePart = date.toISOString().slice(0, 10).replace(/-/g, "");
-      const randomPart = Math.random().toString(16).substr(2, 8).toUpperCase();
-      return `FAC-${datePart}-${randomPart}`;
-    }
-
-    const currentValue = invoiceNumber();
-    setting.value = currentValue;
+    const currentValue = parseFloat(setting.value) + 1;
+    setting.value = currentValue.toString();
     await setting.save();
 
     return currentValue;

@@ -9,7 +9,7 @@ export class InvoiceServiceEntity extends AbstractEntity {
   @Column({ name: "quantity", type: "integer", nullable: false })
   quantity: number;
 
-  @Column({ name: "amount", type: "integer", nullable: false })
+  @Column({ name: "amount", type: "float", nullable: false })
   amount: number;
 
   @Column({ name: "archived", type: "tinyint", default: 0 })

@@ -17,18 +17,18 @@ export default abstract class AbstractEntity extends BaseEntity {
     type: "datetime",
     default: () => "CURRENT_TIMESTAMP",
   })
-  public createdAt: string;
+  public createdAt: Date;
 
   @Column({
     name: "updated_at",
     type: "datetime",
     default: () => "CURRENT_TIMESTAMP",
   })
-  public updatedAt: string;
+  public updatedAt: Date;
 
   public async save(): Promise<this> {
     console.log("saving: " + this.constructor.name);
-    this.updatedAt = dayjs().format("YYYY-MM-DD HH:mm:ss");
+    this.updatedAt = dayjs().toDate();
     return await super.save();
   }
 

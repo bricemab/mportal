@@ -19,7 +19,7 @@ import type { InvoiceLogType } from '@/types/InvoiceLogType.ts'
 import SortSelect from '@/components/Filters/SortSelect.vue'
 import ClientMultiSelect from '@/components/Filters/ClientMultiSelect.vue'
 import InvoiceNumberSelect from '@/components/Filters/InvoiceNumberSelect.vue'
-import InvoiceNameSelect from '@/components/Filters/InvoiceNameSelect.vue'
+import InvoiceReferenceSelect from '@/components/Filters/InvoiceReferenceSelect.vue'
 import AmountRangeSelect from '@/components/Filters/AmountRangeSelect.vue'
 import InvoiceStateSelect from '@/components/Filters/InvoiceStateSelect.vue'
 
@@ -32,16 +32,6 @@ const isEditOpen = ref(false)
 const isStatusHistoryOpen = ref(false)
 const isCreateOpen = ref(false)
 const isMoreInfoOpen = ref(false)
-
-const stateStyles: Record<string, string> = {
-  CREATED: 'text-blue-600',
-  UPDATED: 'text-yellow-600',
-  GENERATED: 'text-indigo-600',
-  SENT: 'text-teal-600',
-  PAID: 'text-green-600',
-  CANCELLED: 'text-red-600',
-  UNPAID: 'text-orange-600',
-}
 
 const invoiceStateLabels: Record<string, string> = {
   CREATED: 'Créé',
@@ -128,7 +118,7 @@ const fetchList = async () => {
   }
 }
 const downloadPdf = async (invoice: InvoicePage) => {
-  await Utils.downloadPdf('/invoices/generate', { id: invoice.id }, invoice.number)
+  await Utils.downloadPdf('/invoices/generate', { id: invoice.id }, invoice.number.toString())
   await fetchList()
 }
 
@@ -139,20 +129,23 @@ onMounted(async () => {
 // Filtres
 const selectedSort = ref('')
 const selectedClients = ref<number[]>([])
-const selectedInvoiceNumbers = ref<string[]>([])
+const selectedInvoiceNumbers = ref<number[]>([])
 const selectedInvoiceNames = ref<string[]>([])
+const selectedInvoiceReferences = ref<string[]>([])
 const selectedInvoiceStates = ref<string[]>([])
 const amountMin = ref<number | null>(null)
 const amountMax = ref<number | null>(null)
 
 const allClients = computed(() => [...new Set(invoices.value.map((i) => i.client))])
 const invoiceNumbers = computed(() => [...new Set(invoices.value.map((i) => i.number))])
+const invoiceReferences = computed(() => [...new Set(invoices.value.map((i) => i.reference))])
 const invoiceNames = computed(() => [...new Set(invoices.value.map((i) => i.name))])
 
 const applyClientFilter = () => {}
 const applyAmountFilter = () => {}
 const applyInvoiceStateFilter = () => {}
 const applyInvoiceNumberFilter = () => {}
+const applyInvoiceReferencesFilter = () => {}
 const applyInvoiceNameFilter = () => {}
 
 const filteredInvoices = computed(() => {
@@ -216,10 +209,10 @@ const filteredInvoices = computed(() => {
         v-model="selectedInvoiceNumbers"
         @apply="applyInvoiceNumberFilter"
       />
-      <InvoiceNameSelect
-        :invoiceNames="invoiceNames"
-        v-model="selectedInvoiceNames"
-        @apply="applyInvoiceNameFilter"
+      <InvoiceReferenceSelect
+        :invoiceReferences="invoiceReferences"
+        v-model="selectedInvoiceReferences"
+        @apply="applyInvoiceReferencesFilter"
       />
       <AmountRangeSelect
         v-model:min="amountMin"
@@ -238,9 +231,9 @@ const filteredInvoices = computed(() => {
         <tr class="text-left border-b border-white">
           <th class="py-5">Client</th>
           <th>N°</th>
+          <th class="w-[300px]">Référence</th>
           <th>Nom</th>
           <th>Montant</th>
-          <th>Date dernière action</th>
           <th>Date d'échéance</th>
           <th>Status</th>
           <th>Actions</th>
@@ -254,9 +247,9 @@ const filteredInvoices = computed(() => {
         >
           <td>{{ invoice.client.name }}</td>
           <td class="py-5">{{ invoice.number }}</td>
+          <td>{{ invoice.reference }}</td>
           <td>{{ invoice.name }}</td>
           <td>{{ invoice.amount }}</td>
-          <td>{{ dayjs(invoice.logs[0]?.createdAt).format('DD.MM.YYYY HH:mm:ss') }}</td>
           <td>
             {{
               invoice.dueAt

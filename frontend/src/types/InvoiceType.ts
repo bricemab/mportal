@@ -25,7 +25,8 @@ export enum InvoiceState {
 export interface InvoicePage {
   id: number
   name: string
-  number: string
+  number: number
+  reference: string
   amount: number
   state: InvoiceState
   client: ClientType

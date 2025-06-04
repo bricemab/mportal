@@ -5,7 +5,6 @@ import compression from "compression";
 import { Request, Response } from "express";
 import Logger from "./utils/Logger";
 import Utils from "./utils/Utils";
-import GlobalStore from "./utils/GlobalStore";
 import { GeneralErrors } from "./utils/BackendErrors";
 import config from "./config/config";
 import express from "express";
@@ -19,6 +18,7 @@ import { initializeDatabase } from "./database";
 import clientRouter from "./routes/ClientRouter";
 import serviceRouter from "./routes/ServiceRouter";
 import invoiceRouter from "./routes/InvoiceRouter";
+import GlobalRouter from "./routes/GlobalRouter";
 
 const app = express();
 
@@ -46,6 +46,7 @@ setup()
       res.status(200).json({ status: "ok" });
     });
     app.use(AuthMiddleware.checkAuth);
+    app.use("/api", GlobalRouter);
     app.use("/api/auth", authRouter);
     app.use("/api/clients", clientRouter);
     app.use("/api/services", serviceRouter);

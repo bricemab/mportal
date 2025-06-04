@@ -10,8 +10,11 @@ export class InvoiceEntity extends AbstractEntity {
   @Column({ name: "name", type: "varchar", nullable: false })
   name: string;
 
-  @Column({ name: "number", type: "varchar", nullable: false, unique: true })
-  number: string;
+  @Column({ name: "reference", type: "varchar", nullable: false, unique: true })
+  reference: string;
+
+  @Column({ name: "number", type: "double", nullable: false, unique: true })
+  number: number;
 
   @Column({ name: "state", type: "varchar", nullable: false })
   state: InvoiceState;
