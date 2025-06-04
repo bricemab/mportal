@@ -282,7 +282,6 @@ RequestManager.post(
       }
 
       invoice.name = name;
-      invoice.state = InvoiceState.UPDATED;
       invoice.client = client;
       await invoice.save();
 
