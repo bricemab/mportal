@@ -606,12 +606,12 @@ RequestManager.post(
             width: 50,
             align: "right",
           })
-          .text(s.amount.toFixed(2) + " CHF", 350, y + 5, {
-            width: 50,
+          .text(s.amount.toFixed(2) + " CHF", 300, y + 5, {
+            width: 100,
             align: "right",
           })
-          .text((s.amount * s.quantity).toFixed(2) + " CHF", 450, y + 5, {
-            width: 70,
+          .text((s.amount * s.quantity).toFixed(2) + " CHF", 420, y + 5, {
+            width: 100,
             align: "right",
           });
 
