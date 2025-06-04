@@ -31,25 +31,19 @@ RequestManager.post(
       }>,
       response: Response,
     ) => {
-      const invoiceEntities = await InvoiceEntity.find({
-        where: {
-          archived: false,
-        },
-        order: {
-          name: "ASC",
-        },
-        relations: {
-          client: true,
-          invoiceLogs: {
-            client: true,
-            invoice: true,
-          },
-          invoiceServices: {
-            service: true,
-            invoice: true,
-          },
-        },
-      });
+      const invoiceEntities = await InvoiceEntity.createQueryBuilder("invoice")
+        .leftJoinAndSelect("invoice.client", "client")
+        .leftJoinAndSelect("invoice.invoiceLogs", "invoiceLogs")
+        .leftJoinAndSelect("invoiceLogs.client", "invoiceLogsClient")
+        .leftJoinAndSelect("invoiceLogs.invoice", "invoiceLogsInvoice")
+        .leftJoinAndSelect("invoice.invoiceServices", "invoiceServices")
+        .leftJoinAndSelect("invoiceServices.service", "service")
+        .leftJoinAndSelect("invoiceServices.invoice", "invoiceServiceInvoice")
+        .where("invoice.archived = false")
+        .orderBy(
+          `FIELD(invoice.state, 'CREATED', 'GENERATED', 'SENT', 'PAID', 'CANCELLED', 'UNPAID')`,
+        )
+        .getMany();
 
       const invoices = invoiceEntities.map((invoice) => {
         let amount = 0;

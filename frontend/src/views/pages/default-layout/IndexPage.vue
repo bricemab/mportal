@@ -162,7 +162,7 @@ watch(selectedYear, loadDashboardData)
       <div class="bg-lightBlack p-6 rounded-xl">
         <h4 class="mb-4">Meilleur année</h4>
         <p class="text-xl font-semibold">{{ bestYear.year }}</p>
-        <p class="text-sm">{{ bestYear.value }} CHF de revenus</p>
+        <p class="text-sm">{{ bestYear.value.toFixed(2) }} CHF de revenus</p>
       </div>
       <div class="bg-lightBlack p-6 rounded-xl">
         <h4 class="mb-4">Meilleur client</h4>
