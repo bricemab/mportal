@@ -122,7 +122,7 @@ watch(selectedYear, loadDashboardData)
       </div>
       <div class="bg-lightBlack p-6 rounded-xl flex items-center gap-4">
         <div class="bg-white w-15 h-15 flex items-center justify-center rounded-full">
-          <i class="bx bx-group text-2xl text-black"></i>
+          <i class="bx bxs-component text-2xl text-black"></i>
         </div>
         <div>
           <p class="text-sm">Nombre de services</p>
@@ -131,10 +131,10 @@ watch(selectedYear, loadDashboardData)
       </div>
       <div class="bg-lightBlack p-6 rounded-xl flex items-center gap-4">
         <div class="bg-white w-15 h-15 flex items-center justify-center rounded-full">
-          <i class="bx bx-group text-2xl text-black"></i>
+          <i class="bx bx-receipt text-2xl text-black"></i>
         </div>
         <div>
-          <p class="text-sm">Facture générées</p>
+          <p class="text-sm">Factures en attentes</p>
           <h1>{{ invoicesNumber }}</h1>
         </div>
       </div>

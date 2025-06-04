@@ -10,8 +10,8 @@ import {
   getBestYearOverall,
   getCumulativeRevenueForYear,
 } from "../entities/Invoice/InvoiceManager";
-import GlobalStore from "../utils/GlobalStore";
 import { GeneralErrors } from "../utils/BackendErrors";
+import { InvoiceState } from "../entities/Invoice/InvoiceState";
 
 const GlobalRouter = Router();
 
@@ -53,6 +53,7 @@ RequestManager.post(
       const invoicesNumber = await InvoiceEntity.count({
         where: {
           archived: false,
+          state: InvoiceState.SENT,
         },
       });
 
