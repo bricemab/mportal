@@ -80,7 +80,7 @@ const isActive = computed(() => modelValue.length > 0)
 </script>
 
 <template>
-  <div ref="root" class="relative inline-block w-60">
+  <div ref="root" class="relative inline-block w-50">
     <button
       @click="openDropdown"
       :class="[
@@ -88,7 +88,7 @@ const isActive = computed(() => modelValue.length > 0)
         isActive ? 'border-2 border-white' : 'border border-gray-600',
       ]"
     >
-      <i class="bx bxs-barcode pr-2"></i>Trier par n° de facture
+      <i class="bx bxs-barcode pr-2"></i>Trier par n°
     </button>
 
     <div
