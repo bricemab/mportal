@@ -22,9 +22,9 @@ const renewalData = ref({
 })
 
 watch(
-  () => [props.open, props.data],
+  () => [props.open, props.data] as const,
   ([isOpen, contract]) => {
-    if (isOpen && contract) {
+    if (isOpen && contract && contract !== null) {
       // Préremplir avec les données du contrat existant
       renewalData.value = {
         name: contract.name,
@@ -45,16 +45,31 @@ const onClose = () => emit('close')
 
 const onSubmit = async () => {
   if (!props.data) return
+
+  // Option 1: Utiliser la route /create existante (comme demandé initialement)
   const payload = {
-    originalContractId: props.data.id,
     name: renewalData.value.name,
+    clientId: props.data.client.id,
     totalHours: Number(renewalData.value.totalHours),
     price: Number(renewalData.value.price),
     contractPath: renewalData.value.contractPath,
     startDate: renewalData.value.startDate,
     endDate: renewalData.value.endDate,
   }
-  const response = await Utils.postEncodedToBackend('/maintenance-contracts/renew', payload)
+
+  const response = await Utils.postEncodedToBackend('/maintenance-contracts/create', payload)
+
+  // Option 2: Utiliser la nouvelle route /renew dédiée (décommenter si préféré)
+  // const payload = {
+  //   originalContractId: props.data.id,
+  //   name: renewalData.value.name,
+  //   totalHours: Number(renewalData.value.totalHours),
+  //   price: Number(renewalData.value.price),
+  //   contractPath: renewalData.value.contractPath,
+  //   startDate: renewalData.value.startDate,
+  //   endDate: renewalData.value.endDate,
+  // }
+  // const response = await Utils.postEncodedToBackend('/maintenance-contracts/renew', payload)
 
   if (response.success) {
     toast.success('Le contrat de maintenance a été renouvelé avec succès !')

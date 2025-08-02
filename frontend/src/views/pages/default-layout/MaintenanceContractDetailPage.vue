@@ -5,6 +5,7 @@ import AddMaintenanceHourModal from '@/components/MaintenanceContracts/AddMainte
 import type { MaintenanceContractType } from '@/types/MaintenanceContractType.ts'
 import Utils from '@/utils/Utils.ts'
 import dayjs from 'dayjs'
+import type { ContractHourType } from '@/types/ContractHourType.ts'
 
 const route = useRoute()
 const router = useRouter()
@@ -49,7 +50,10 @@ const hoursForSelectedYear = computed(() => {
 })
 
 const totalHoursForYear = computed(() => {
-  return hoursForSelectedYear.value.reduce((sum: number, hour: number) => sum + hour.hours, 0)
+  return hoursForSelectedYear.value.reduce(
+    (sum: number, hour: ContractHourType) => sum + hour.hours,
+    0,
+  )
 })
 
 const getRemainingHoursClass = (contract: MaintenanceContractType) => {
@@ -138,7 +142,7 @@ onMounted(fetchContract)
 
           <div>
             <span class="text-gray-400">Chemin contrat :</span>
-            <span class="ml-2 text-sm text-gray-300 break-all">{{ contract.contractPath }}</span>
+            <span class="ml-2 text-sm text-gray-300 break-all">{{ contract.path }}</span>
           </div>
         </div>
       </div>
