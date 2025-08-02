@@ -158,7 +158,7 @@ RequestManager.post(
           clientId: number;
           totalHours: number;
           price: number;
-          contractPath: string;
+          contractPath: string | null;
           startDate: string;
           endDate: string;
         };
@@ -171,7 +171,6 @@ RequestManager.post(
         !request.body.data.clientId ||
         !request.body.data.totalHours ||
         !request.body.data.price ||
-        !request.body.data.contractPath ||
         !request.body.data.startDate ||
         !request.body.data.endDate
       ) {
@@ -257,7 +256,7 @@ RequestManager.post(
           name: string;
           totalHours: number;
           price: number;
-          contractPath: string;
+          contractPath: string | null;
           startDate: string;
           endDate: string;
         };
@@ -270,7 +269,6 @@ RequestManager.post(
         !request.body.data.name ||
         !request.body.data.totalHours ||
         !request.body.data.price ||
-        !request.body.data.contractPath ||
         !request.body.data.startDate ||
         !request.body.data.endDate
       ) {

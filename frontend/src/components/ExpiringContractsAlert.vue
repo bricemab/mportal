@@ -62,7 +62,7 @@ const navigateToContract = (id: number) => {
 <template>
   <div
     v-if="contracts.length > 0"
-    class="fixed top-20 right-4 z-50 transition-all duration-300"
+    class="fixed top-4 right-64 z-50 transition-all duration-300"
     :class="isMinimized ? 'w-auto' : 'w-96'"
   >
     <!-- Version minimisée -->

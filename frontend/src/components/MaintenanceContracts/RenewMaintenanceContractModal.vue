@@ -135,7 +135,6 @@ const onSubmit = async () => {
         <label class="block text-sm font-medium mb-2">Chemin vers le contrat</label>
         <input
           v-model="renewalData.contractPath"
-          required
           placeholder="Ex: C:\contrats\contrat_client_renouvelé.pdf"
           class="custom-input w-full"
         />

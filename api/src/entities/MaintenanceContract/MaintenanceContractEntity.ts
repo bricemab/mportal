@@ -20,7 +20,7 @@ export class MaintenanceContractEntity extends AbstractEntity {
   price: number;
 
   @Column({ name: "path", type: "varchar", nullable: true })
-  path: string;
+  path: string | null;
 
   @Column({ name: "start_at", type: "datetime", nullable: false })
   startAt: string;
