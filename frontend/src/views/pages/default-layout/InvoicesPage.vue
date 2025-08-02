@@ -286,7 +286,7 @@ const filteredInvoices = computed(() => {
               title="Historique des actions"
               @click="openStatusHistory(invoice)"
             >
-              <i class="bx bx-line-chart"></i>
+              <i class="bxr bx-chart-line" />
             </button>
             <button
               class="text-white hover:text-yellow-500"
@@ -307,7 +307,7 @@ const filteredInvoices = computed(() => {
               title="Générer un pdf"
               @click="downloadPdf(invoice)"
             >
-              <i class="bx bxs-file-pdf"></i>
+              <i class="bxr bx-file-report"></i>
             </button>
           </td>
         </tr>

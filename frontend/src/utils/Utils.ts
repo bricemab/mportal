@@ -9,6 +9,8 @@ import { GeneralErrors } from '@/types/BackendErrors.ts'
 import axios from 'axios'
 import { toast } from 'vue3-toastify'
 import Global from '@/utils/Global.ts'
+import type { Dayjs } from 'dayjs'
+import dayjs from 'dayjs'
 
 export default class Utils {
   static async downloadPdf(url: string, params: Object, filename: string): Promise<void> {
@@ -77,6 +79,25 @@ export default class Utils {
       }
       return RequestManager.executePost(url, data, config)
     }
+  }
+
+  static diffBetweenToday(date: string | Dayjs) {
+    const now = dayjs()
+    const dateDonnee = dayjs(date)
+
+    const diff = dateDonnee.diff(now, 'day')
+
+    if (diff > 0) {
+      return `+${diff} jours`
+    } else if (diff < 0) {
+      return `${diff} jours`
+    } else {
+      return 'Aujourd’hui'
+    }
+  }
+
+  static formatAmountWithApostrophes(amount: string | number) {
+    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "'")
   }
 
   static buildHmacSha256Signature(parameters: Object) {

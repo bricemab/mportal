@@ -2,6 +2,7 @@ import { Entity, Column, OneToMany } from "typeorm";
 import AbstractEntity from "../AbstractEntity";
 import { InvoiceLogEntity } from "../InvoiceLog/InvoiceLogEntity";
 import { InvoiceEntity } from "../Invoice/InvoiceEntity";
+import { MaintenanceContractEntity } from "../MaintenanceContract/MaintenanceContractEntity";
 
 @Entity("client")
 export class ClientEntity extends AbstractEntity {
@@ -44,4 +45,7 @@ export class ClientEntity extends AbstractEntity {
 
   @OneToMany(() => InvoiceEntity, (i) => i.client)
   invoices: InvoiceEntity[];
+
+  @OneToMany(() => MaintenanceContractEntity, (i) => i.client)
+  maintenanceContracts: MaintenanceContractEntity[];
 }

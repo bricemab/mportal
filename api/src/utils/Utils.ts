@@ -42,6 +42,17 @@ export default {
     });
     return "Computer";
   },
+  computeQRReference(base: string): string {
+    const weights = [0, 9, 4, 6, 8, 2, 7, 1, 3, 5];
+    let carry = 0;
+
+    for (const digit of base) {
+      carry = weights[(parseInt(digit, 10) + carry) % 10];
+    }
+
+    const checkDigit = (10 - carry) % 10;
+    return base + checkDigit;
+  },
   debug(variable: any) {
     console.log(util.inspect(variable, false, null, true /* enable colors */));
   },
@@ -95,6 +106,7 @@ export default {
     function escapeRegExp(string: string) {
       return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); // $& means the whole matched string
     }
+
     return str.replace(new RegExp(escapeRegExp(find), "g"), replace);
   },
   shortId() {

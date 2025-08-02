@@ -9,6 +9,8 @@ import AclManager from '@/AclManager.ts'
 import ClientsPage from './views/pages/default-layout/ClientsPage.vue'
 import ServicesPage from './views/pages/default-layout/ServicesPage.vue'
 import InvoicesPage from './views/pages/default-layout/InvoicesPage.vue'
+import MaintenanceContractsPage from '@/views/pages/default-layout/MaintenanceContractsPage.vue'
+import MaintenanceContractDetailPage from '@/views/pages/default-layout/MaintenanceContractDetailPage.vue'
 
 export const routes: RouteRecordRaw[] = [
   {
@@ -61,6 +63,20 @@ export const routes: RouteRecordRaw[] = [
             component: InvoicesPage,
             meta: { logged: true },
           },
+          {
+            path: 'maintenance-contracts',
+            name: 'maintenance-contracts-page',
+            component: MaintenanceContractsPage,
+            meta: { logged: true },
+            children: [
+              {
+                path: ':id',
+                name: 'maintenance-contracts-detail-page',
+                component: MaintenanceContractDetailPage,
+                meta: { logged: true },
+              },
+            ],
+          },
         ],
       },
     ],
@@ -79,6 +95,7 @@ export const routes: RouteRecordRaw[] = [
 
 const router = createRouter({
   linkActiveClass: 'router-active',
+  linkExactActiveClass: 'router-active',
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,
 })

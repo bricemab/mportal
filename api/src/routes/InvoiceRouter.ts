@@ -16,6 +16,7 @@ import { Data } from "swissqrbill/types";
 import config from "../config/config";
 import dayjs from "dayjs";
 import path from "path";
+import Utils from "../utils/Utils";
 
 const InvoiceRouter = Router();
 
@@ -132,22 +133,11 @@ RequestManager.post(
           },
         });
       }
-      function computeQRReference(base: string): string {
-        const weights = [0, 9, 4, 6, 8, 2, 7, 1, 3, 5];
-        let carry = 0;
-
-        for (const digit of base) {
-          carry = weights[(parseInt(digit, 10) + carry) % 10];
-        }
-
-        const checkDigit = (10 - carry) % 10;
-        return base + checkDigit;
-      }
 
       const invoice = new InvoiceEntity();
       invoice.name = name;
       invoice.number = await SettingManager.getNextInvoiceNumber();
-      invoice.reference = computeQRReference(
+      invoice.reference = Utils.computeQRReference(
         invoice.number.toString().padStart(26, "0"),
       );
       invoice.client = client;
@@ -179,7 +169,7 @@ RequestManager.post(
         const invoice = new InvoiceEntity();
         invoice.name = name;
         invoice.number = await SettingManager.getNextInvoiceNumber();
-        invoice.reference = computeQRReference(
+        invoice.reference = Utils.computeQRReference(
           invoice.number.toString().padStart(26, "0"),
         );
         invoice.client = (await ClientEntity.findOneBy({

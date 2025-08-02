@@ -4,6 +4,7 @@ import { ClientEntity } from "../Client/ClientEntity";
 import { InvoiceState } from "./InvoiceState";
 import { InvoiceServiceEntity } from "../InvoiceService/InvoiceServiceEntity";
 import { InvoiceLogEntity } from "../InvoiceLog/InvoiceLogEntity";
+import { ContractInvoiceEntity } from "../ContractInvoice/ContractInvoiceEntity";
 
 @Entity("invoice")
 export class InvoiceEntity extends AbstractEntity {
@@ -35,4 +36,7 @@ export class InvoiceEntity extends AbstractEntity {
 
   @OneToMany(() => InvoiceLogEntity, (il) => il.invoice)
   invoiceLogs: InvoiceLogEntity[];
+
+  @OneToMany(() => ContractInvoiceEntity, (il) => il.invoice)
+  contractInvoices: ContractInvoiceEntity[];
 }
