@@ -167,8 +167,8 @@ onMounted(fetchContract)
 
       <div v-else>
         <div class="mb-4 p-3 bg-gray-800 rounded-lg">
-          <span class="text-gray-400">Total pour {{ selectedYear }} :</span>
-          <span class="ml-2 text-lg font-semibold text-blue-400">{{ totalHoursForYear }}h</span>
+          <span class="text-gray-400">Total pour {{ selectedYear }} : </span>
+          <span class="font-medium">{{ totalHoursForYear }}h restantes</span>
         </div>
 
         <div class="space-y-3">

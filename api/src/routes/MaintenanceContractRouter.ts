@@ -246,6 +246,121 @@ RequestManager.post(
 
 RequestManager.post(
   MaintenanceContractRouter,
+  "/renew",
+  true,
+  RequestManager.asyncResolver(
+    async (
+      request: ApplicationRequest<{
+        token: string;
+        data: {
+          originalContractId: number;
+          name: string;
+          totalHours: number;
+          price: number;
+          contractPath: string;
+          startDate: string;
+          endDate: string;
+        };
+      }>,
+      response: Response,
+    ) => {
+      if (
+        !request.body.data ||
+        !request.body.data.originalContractId ||
+        !request.body.data.name ||
+        !request.body.data.totalHours ||
+        !request.body.data.price ||
+        !request.body.data.contractPath ||
+        !request.body.data.startDate ||
+        !request.body.data.endDate
+      ) {
+        return RequestManager.sendResponse(response, {
+          success: false,
+          error: {
+            code: GeneralErrors.INVALID_REQUEST,
+            message: "Missing required fields",
+          },
+        });
+      }
+      const {
+        originalContractId,
+        name,
+        endDate,
+        startDate,
+        price,
+        contractPath,
+        totalHours,
+      } = request.body.data;
+
+      // Récupérer le contrat original pour obtenir le client
+      const contract = await MaintenanceContractEntity.findOne({
+        where: { id: originalContractId },
+        relations: { client: true },
+      });
+
+      if (!contract) {
+        return RequestManager.sendResponse(response, {
+          success: false,
+          error: {
+            code: GeneralErrors.INVALID_REQUEST,
+            message: "Original contract not found",
+          },
+        });
+      }
+
+      contract.name = name;
+      contract.remainingHours = totalHours;
+      contract.totalHours = totalHours;
+      contract.price = price;
+      contract.path = contractPath;
+      contract.startAt = startDate;
+      contract.endAt = endDate;
+      await contract.save();
+
+      // Créer la facture pour le renouvellement
+      const invoice = new InvoiceEntity();
+      invoice.name =
+        "Renouvellement contrat maintenance - " +
+        contract.client.name +
+        " - " +
+        dayjs(startDate).format("DD.MM.YYYY") +
+        " à " +
+        dayjs(endDate).format("DD.MM.YYYY");
+      invoice.number = await SettingManager.getNextInvoiceNumber();
+      invoice.state = InvoiceState.CREATED;
+      invoice.reference = Utils.computeQRReference(
+        invoice.number.toString().padStart(26, "0"),
+      );
+      invoice.client = contract.client;
+      await invoice.save();
+
+      const invoiceService = new InvoiceServiceEntity();
+      invoiceService.amount = price;
+      invoiceService.quantity = 1;
+      invoiceService.invoice = invoice;
+      invoiceService.service = (await ServiceEntity.findOneBy({
+        id: 11, // ID du contrat de maintenance
+      }))!;
+      await invoiceService.save();
+
+      const contractInvoice = new ContractInvoiceEntity();
+      contractInvoice.invoice = invoice;
+      contractInvoice.contract = contract;
+      await contractInvoice.save();
+
+      return RequestManager.sendResponse(response, {
+        success: true,
+        data: {
+          contractId: contract.id,
+          invoiceId: invoice.id,
+        },
+      });
+    },
+  ),
+);
+
+RequestManager.post(
+  MaintenanceContractRouter,
   "/delete",
   true,
   RequestManager.asyncResolver(

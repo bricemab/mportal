@@ -45,18 +45,17 @@ const onClose = () => emit('close')
 
 const onSubmit = async () => {
   if (!props.data) return
-
   const payload = {
+    originalContractId: props.data.id,
     name: renewalData.value.name,
-    clientId: props.data.client.id,
     totalHours: Number(renewalData.value.totalHours),
     price: Number(renewalData.value.price),
     contractPath: renewalData.value.contractPath,
     startDate: renewalData.value.startDate,
     endDate: renewalData.value.endDate,
   }
+  const response = await Utils.postEncodedToBackend('/maintenance-contracts/renew', payload)
 
-  const response = await Utils.postEncodedToBackend('/maintenance-contracts/create', payload)
   if (response.success) {
     toast.success('Le contrat de maintenance a été renouvelé avec succès !')
   } else {

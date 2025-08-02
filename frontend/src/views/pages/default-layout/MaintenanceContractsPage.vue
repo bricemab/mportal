@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import ThePagination from '@/components/ThePagination.vue'
 import CreateMaintenanceContractModal from '@/components/MaintenanceContracts/CreateMaintenanceContractModal.vue'
 import DeleteMaintenanceContractModal from '@/components/MaintenanceContracts/DeleteMaintenanceContractModal.vue'
+import RenewMaintenanceContractModal from '@/components/MaintenanceContracts/RenewMaintenanceContractModal.vue'
 import type { MaintenanceContractType } from '@/types/MaintenanceContractType.ts'
 import dayjs from 'dayjs'
 import Utils from '@/utils/Utils'
@@ -19,6 +20,7 @@ const paginatedItems = ref<MaintenanceContractType[]>([])
 
 const isCreateOpen = ref(false)
 const isDeleteOpen = ref(false)
+const isRenewOpen = ref(false)
 const selectedContract = ref<MaintenanceContractType | null>(null)
 
 function openCreateModal() {
@@ -29,6 +31,11 @@ function openCreateModal() {
 function openDeleteModal(contract: MaintenanceContractType) {
   selectedContract.value = contract
   isDeleteOpen.value = true
+}
+
+function openRenewModal(contract: MaintenanceContractType) {
+  selectedContract.value = contract
+  isRenewOpen.value = true
 }
 
 function viewContractDetails(contract: MaintenanceContractType) {
@@ -43,6 +50,12 @@ async function handleDeleteConfirm() {
 
 async function handleCreateSubmit() {
   isCreateOpen.value = false
+  await fetchList()
+}
+
+async function handleRenewSubmit() {
+  isRenewOpen.value = false
+  selectedContract.value = null
   await fetchList()
 }
 
@@ -146,7 +159,11 @@ onMounted(async () => {
             >
               <i class="bx bx-info-circle"></i>
             </button>
-            <button class="text-white hover:text-blue-500" title="Renouveler le contrat">
+            <button
+              class="text-white hover:text-blue-500"
+              title="Renouveler le contrat"
+              @click="openRenewModal(contract)"
+            >
               <i class="bxr bx-refresh-cw"></i>
             </button>
             <button
@@ -179,6 +196,13 @@ onMounted(async () => {
       :data="selectedContract!"
       @close="isDeleteOpen = false"
       @confirm="handleDeleteConfirm"
+    />
+
+    <RenewMaintenanceContractModal
+      :open="isRenewOpen"
+      :data="selectedContract"
+      @close="isRenewOpen = false"
+      @submit="handleRenewSubmit"
     />
   </div>
 
