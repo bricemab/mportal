@@ -30,15 +30,24 @@ const sortedContracts = computed(() => {
 })
 
 const urgencyClass = (daysRemaining: number) => {
+  if (daysRemaining < 0) return 'bg-red-600/20 border-red-600 text-red-500'
   if (daysRemaining <= 7) return 'bg-red-500/20 border-red-500 text-red-400'
   if (daysRemaining <= 14) return 'bg-orange-500/20 border-orange-500 text-orange-400'
   return 'bg-yellow-500/20 border-yellow-500 text-yellow-400'
 }
 
 const urgencyIcon = (daysRemaining: number) => {
+  if (daysRemaining < 0) return 'bx-x-circle'
   if (daysRemaining <= 7) return 'bx-error-circle'
   if (daysRemaining <= 14) return 'bx-error'
   return 'bx-info-circle'
+}
+
+const formatDaysRemaining = (days: number) => {
+  if (days < 0) {
+    return `Expiré depuis ${Math.abs(days)} jour(s)`
+  }
+  return `${days} jour(s) restant(s)`
 }
 
 const navigateToContracts = () => {
@@ -53,32 +62,72 @@ const navigateToContract = (id: number) => {
 <template>
   <div
     v-if="contracts.length > 0"
-    class="fixed top-4 right-4 z-50 transition-all duration-300"
+    class="fixed top-20 right-4 z-50 transition-all duration-300"
     :class="isMinimized ? 'w-auto' : 'w-96'"
   >
     <!-- Version minimisée -->
     <div
       v-if="isMinimized"
-      class="bg-lightBlack border border-yellow-500/50 rounded-lg p-3 shadow-lg cursor-pointer hover:shadow-xl transition-shadow"
+      class="bg-lightBlack border rounded-lg p-3 shadow-lg cursor-pointer hover:shadow-xl transition-shadow"
+      :class="
+        contracts.some((c) => c.daysRemaining < 0) ? 'border-red-500/50' : 'border-yellow-500/50'
+      "
       @click="isMinimized = false"
     >
       <div class="flex items-center gap-2">
-        <i class="bx bx-error text-yellow-500 text-xl animate-pulse"></i>
-        <span class="text-sm font-medium">{{ contracts.length }} contrat(s) à renouveler</span>
+        <i
+          class="bx text-xl animate-pulse"
+          :class="
+            contracts.some((c) => c.daysRemaining < 0)
+              ? 'bx-x-circle text-red-500'
+              : 'bx-error text-yellow-500'
+          "
+        ></i>
+        <span class="text-sm font-medium">
+          {{
+            contracts.filter((c) => c.daysRemaining < 0).length > 0
+              ? `${contracts.filter((c) => c.daysRemaining < 0).length} contrat(s) expiré(s)`
+              : `${contracts.length} contrat(s) à renouveler`
+          }}
+        </span>
       </div>
     </div>
 
     <!-- Version complète -->
     <div
       v-else
-      class="bg-lightBlack border border-yellow-500/50 rounded-lg shadow-lg overflow-hidden"
+      class="bg-lightBlack border rounded-lg shadow-lg overflow-hidden"
+      :class="
+        contracts.some((c) => c.daysRemaining < 0) ? 'border-red-500/50' : 'border-yellow-500/50'
+      "
     >
       <!-- En-tête -->
-      <div class="bg-yellow-500/10 p-4 border-b border-yellow-500/30">
+      <div
+        class="p-4 border-b"
+        :class="
+          contracts.some((c) => c.daysRemaining < 0)
+            ? 'bg-red-500/10 border-red-500/30'
+            : 'bg-yellow-500/10 border-yellow-500/30'
+        "
+      >
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-2">
-            <i class="bx bx-error text-yellow-500 text-xl animate-pulse"></i>
-            <h3 class="font-semibold text-yellow-400">Contrats à renouveler</h3>
+            <i
+              class="bx text-xl animate-pulse"
+              :class="
+                contracts.some((c) => c.daysRemaining < 0)
+                  ? 'bx-x-circle text-red-500'
+                  : 'bx-error text-yellow-500'
+              "
+            ></i>
+            <h3
+              class="font-semibold"
+              :class="
+                contracts.some((c) => c.daysRemaining < 0) ? 'text-red-400' : 'text-yellow-400'
+              "
+            >
+              Contrats à renouveler
+            </h3>
           </div>
           <button
             @click="isMinimized = true"
@@ -89,7 +138,11 @@ const navigateToContract = (id: number) => {
           </button>
         </div>
         <p class="text-xs text-gray-400 mt-1">
-          {{ contracts.length }} contrat(s) expire(nt) dans le prochain mois
+          <span v-if="contracts.filter((c) => c.daysRemaining < 0).length > 0">
+            {{ contracts.filter((c) => c.daysRemaining < 0).length }} expiré(s),
+          </span>
+          {{ contracts.filter((c) => c.daysRemaining >= 0).length }} expire(nt) dans le prochain
+          mois
         </p>
       </div>
 
@@ -108,11 +161,13 @@ const navigateToContract = (id: number) => {
                   :class="['bx', urgencyIcon(contract.daysRemaining), 'text-sm']"
                   :style="{
                     color:
-                      contract.daysRemaining <= 7
-                        ? '#ef4444'
-                        : contract.daysRemaining <= 14
-                          ? '#f97316'
-                          : '#eab308',
+                      contract.daysRemaining < 0
+                        ? '#dc2626'
+                        : contract.daysRemaining <= 7
+                          ? '#ef4444'
+                          : contract.daysRemaining <= 14
+                            ? '#f97316'
+                            : '#eab308',
                   }"
                 ></i>
                 <h4 class="font-medium text-sm truncate">{{ contract.name }}</h4>
@@ -123,8 +178,13 @@ const navigateToContract = (id: number) => {
               </p>
               <div class="flex items-center gap-3 mt-2 text-xs">
                 <span class="px-2 py-1 rounded-full" :class="urgencyClass(contract.daysRemaining)">
-                  <i class="bx bx-calendar-exclamation mr-1"></i>
-                  {{ contract.daysRemaining }} jour(s)
+                  <i
+                    :class="[
+                      'bx mr-1',
+                      contract.daysRemaining < 0 ? 'bx-x-circle' : 'bx-calendar-exclamation',
+                    ]"
+                  ></i>
+                  {{ formatDaysRemaining(contract.daysRemaining) }}
                 </span>
                 <span class="text-gray-400">
                   Expire le {{ dayjs(contract.endAt).format('DD/MM/YYYY') }}

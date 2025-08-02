@@ -105,24 +105,17 @@ RequestManager.post(
         .orderBy("year", "ASC")
         .getRawMany();
 
-      // Récupérer les contrats de maintenance arrivant à échéance dans le prochain mois
       const today = dayjs();
       const oneMonthFromNow = today.add(1, "month");
 
-      const expiringContracts = await MaintenanceContractEntity.find({
-        where: {
-          endAt: Between(
-            today.format("YYYY-MM-DD"),
-            oneMonthFromNow.format("YYYY-MM-DD"),
-          ),
-        },
-        relations: {
-          client: true,
-        },
-        order: {
-          endAt: "ASC",
-        },
-      });
+      const expiringContracts =
+        await MaintenanceContractEntity.createQueryBuilder("contract")
+          .leftJoinAndSelect("contract.client", "client")
+          .where("contract.endAt <= :oneMonthFromNow", {
+            oneMonthFromNow: oneMonthFromNow.format("YYYY-MM-DD"),
+          })
+          .orderBy("contract.endAt", "ASC")
+          .getMany();
 
       const expiringContractsData = expiringContracts.map((contract) => ({
         id: contract.id,
