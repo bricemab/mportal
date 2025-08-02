@@ -4,6 +4,7 @@ import RequestManager from "../utils/RequestManager";
 import { ClientEntity } from "../entities/Client/ClientEntity";
 import { ServiceEntity } from "../entities/Service/ServiceEntity";
 import { InvoiceEntity } from "../entities/Invoice/InvoiceEntity";
+import { MaintenanceContractEntity } from "../entities/MaintenanceContract/MaintenanceContractEntity";
 import {
   getBestClientOverall,
   getBestMonthOverall,
@@ -12,6 +13,8 @@ import {
 } from "../entities/Invoice/InvoiceManager";
 import { GeneralErrors } from "../utils/BackendErrors";
 import { InvoiceState } from "../entities/Invoice/InvoiceState";
+import dayjs from "dayjs";
+import { Between } from "typeorm";
 
 const GlobalRouter = Router();
 
@@ -102,6 +105,40 @@ RequestManager.post(
         .orderBy("year", "ASC")
         .getRawMany();
 
+      // Récupérer les contrats de maintenance arrivant à échéance dans le prochain mois
+      const today = dayjs();
+      const oneMonthFromNow = today.add(1, "month");
+
+      const expiringContracts = await MaintenanceContractEntity.find({
+        where: {
+          endAt: Between(
+            today.format("YYYY-MM-DD"),
+            oneMonthFromNow.format("YYYY-MM-DD"),
+          ),
+        },
+        relations: {
+          client: true,
+        },
+        order: {
+          endAt: "ASC",
+        },
+      });
+
+      const expiringContractsData = expiringContracts.map((contract) => ({
+        id: contract.id,
+        name: contract.name,
+        client: {
+          id: contract.client.id,
+          name: contract.client.name,
+          firstname: contract.client.firstname,
+          lastname: contract.client.lastname,
+        },
+        endAt: dayjs(contract.endAt).format("YYYY-MM-DD"),
+        daysRemaining: dayjs(contract.endAt).diff(today, "day"),
+        remainingHours: contract.remainingHours,
+        totalHours: contract.totalHours,
+      }));
+
       return RequestManager.sendResponse(response, {
         success: true,
         data: {
@@ -114,6 +151,7 @@ RequestManager.post(
           bestClient,
           years: result.map((row) => parseInt(row.year)),
           invoices: invoicesData,
+          expiringContracts: expiringContractsData,
         },
       });
     },

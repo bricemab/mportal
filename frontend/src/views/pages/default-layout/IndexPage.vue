@@ -7,6 +7,7 @@ import { toast } from 'vue3-toastify'
 import type { ClientType } from '@/types/ClientType.ts'
 import type { InvoicePage } from '@/types/InvoiceType.ts'
 import dayjs, { Dayjs } from 'dayjs'
+import ExpiringContractsAlert from '@/components/ExpiringContractsAlert.vue'
 
 ChartJS.register(...registerables)
 
@@ -21,6 +22,7 @@ const years = ref<number[]>([])
 const bestMonth = ref<{ year: number; month: string }>({ year: 0, month: '' })
 const bestYear = ref<{ year: number; value: number }>({ year: 0, value: 0 })
 const bestClient = ref<ClientType>()
+const expiringContracts = ref<any[]>([])
 
 const invoiceStateLabels: Record<string, string> = {
   CREATED: 'Créé',
@@ -78,8 +80,9 @@ const loadDashboardData = async () => {
     bestYear: { year: number; value: number }
     bestClient: ClientType
     invoices: InvoicePage[]
+    expiringContracts: any[]
   }>('/load', {
-    year: selectedYear.value, // <-- passe l'année sélectionnée
+    year: selectedYear.value,
   })
 
   if (!response.success) {
@@ -100,6 +103,7 @@ const loadDashboardData = async () => {
   bestClient.value = response.data.bestClient
   invoices.value = response.data.invoices
   years.value = response.data.years
+  expiringContracts.value = response.data.expiringContracts || []
   isLoading.value = false
 }
 
@@ -109,6 +113,9 @@ watch(selectedYear, loadDashboardData)
 
 <template>
   <div class="space-y-10 mb-5">
+    <!-- Alerte des contrats expirant -->
+    <ExpiringContractsAlert :contracts="expiringContracts" />
+
     <!-- Stats top -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
       <div class="bg-lightBlack p-6 rounded-xl flex items-center gap-4">
