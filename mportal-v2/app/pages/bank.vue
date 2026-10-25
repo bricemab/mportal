@@ -61,6 +61,10 @@ const partnerChoice = reactive<Record<number, string>>({})
 // Création de dépense
 const expenseFor = ref<BankTransactionItem | null>(null)
 const expenseForm = reactive({ category: 'OTHER' as ExpenseCategory, label: '', supplier: '', clientId: '' })
+function isCardPayment(description: string | null): boolean {
+  return /^Paiement \d{2}\.\d{2}\.\d{4}/.test(description ?? '')
+}
+
 function openExpense(t: BankTransactionItem) {
   expenseFor.value = t
   const suggested = t.suggestions && 'category' in t.suggestions ? t.suggestions.category : 'OTHER'
@@ -207,6 +211,10 @@ const kindLabels: Record<string, string> = {
               >
                 <Link2 class="size-4" /> Rapprocher
               </button>
+              <div class="ml-auto flex gap-2">
+                <button class="btn-ghost btn-sm" :disabled="busy" @click="act(t, 'classify', { kind: 'OTHER', partnerUserId: null, note: null }, 'Classé « autre »')">Autre</button>
+                <button class="btn-ghost btn-sm" :disabled="busy" @click="act(t, 'ignore', { note: null }, 'Mouvement ignoré')"><Ban class="size-4" /> Ignorer</button>
+              </div>
             </div>
           </template>
 
@@ -222,24 +230,26 @@ const kindLabels: Record<string, string> = {
             </div>
             <div class="flex flex-wrap items-center gap-2">
               <button class="btn-secondary btn-sm" @click="openExpense(t)"><Plus class="size-4" /> Créer une dépense</button>
-              <select v-model="partnerChoice[t.id]" class="input w-auto" aria-label="Associé">
-                <option :value="undefined">Associé…</option>
-                <option v-for="u in users ?? []" :key="u.id" :value="String(u.id)">{{ u.firstname }} {{ u.lastname }}</option>
-              </select>
-              <button
-                class="btn-secondary btn-sm"
-                :disabled="busy || !partnerChoice[t.id]"
-                @click="act(t, 'classify', { kind: 'PARTNER_WITHDRAWAL', partnerUserId: Number(partnerChoice[t.id]), note: null }, 'Prélèvement associé enregistré')"
-              >
-                <UserRound class="size-4" /> Prélèvement associé
-              </button>
+              <!-- Un paiement par carte n'est jamais un prélèvement d'associé -->
+              <template v-if="!isCardPayment(t.description)">
+                <select v-model="partnerChoice[t.id]" class="input w-auto" aria-label="Associé">
+                  <option :value="undefined">Associé…</option>
+                  <option v-for="u in users ?? []" :key="u.id" :value="String(u.id)">{{ u.firstname }} {{ u.lastname }}</option>
+                </select>
+                <button
+                  class="btn-secondary btn-sm"
+                  :disabled="busy || !partnerChoice[t.id]"
+                  @click="act(t, 'classify', { kind: 'PARTNER_WITHDRAWAL', partnerUserId: Number(partnerChoice[t.id]), note: null }, 'Prélèvement associé enregistré')"
+                >
+                  <UserRound class="size-4" /> Prélèvement associé
+                </button>
+              </template>
+              <div class="ml-auto flex gap-2">
+                <button class="btn-ghost btn-sm" :disabled="busy" @click="act(t, 'classify', { kind: 'OTHER', partnerUserId: null, note: null }, 'Classé « autre »')">Autre</button>
+                <button class="btn-ghost btn-sm" :disabled="busy" @click="act(t, 'ignore', { note: null }, 'Mouvement ignoré')"><Ban class="size-4" /> Ignorer</button>
+              </div>
             </div>
           </template>
-
-          <div class="flex flex-wrap gap-2">
-            <button class="btn-ghost btn-sm" :disabled="busy" @click="act(t, 'classify', { kind: 'OTHER', partnerUserId: null, note: null }, 'Classé « autre »')">Autre</button>
-            <button class="btn-ghost btn-sm" :disabled="busy" @click="act(t, 'ignore', { note: null }, 'Mouvement ignoré')"><Ban class="size-4" /> Ignorer</button>
-          </div>
         </div>
       </div>
       <PaginationBar v-if="data" v-model:page="page" :page-size="data.pageSize" :total="data.total" />

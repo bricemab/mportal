@@ -79,7 +79,7 @@ const years = Array.from({ length: currentYear - 2023 }, (_, i) => currentYear -
       <NuxtLink to="/invoices/new" class="btn-primary"><Plus class="size-4" /> Nouvelle facture</NuxtLink>
     </PageHeader>
 
-    <div class="card mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
+    <div class="card mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-6">
       <div class="relative lg:col-span-2">
         <Search class="pointer-events-none absolute top-2.5 left-3 size-4 text-muted" />
         <input v-model="search" class="input pl-9" placeholder="N°, titre, client, référence…" aria-label="Rechercher" />
@@ -91,7 +91,7 @@ const years = Array.from({ length: currentYear - 2023 }, (_, i) => currentYear -
         <option value="">Tous les clients</option>
         <option v-for="c in clients ?? []" :key="c.id" :value="String(c.id)">{{ c.name }}</option>
       </select>
-      <div class="flex gap-2">
+      <div class="flex gap-2 lg:col-span-2">
         <select v-model="filters.year" class="input" aria-label="Année">
           <option value="">Toutes années</option>
           <option v-for="y in years" :key="y" :value="String(y)">{{ y }}</option>
@@ -126,7 +126,7 @@ const years = Array.from({ length: currentYear - 2023 }, (_, i) => currentYear -
             <td class="whitespace-nowrap">
               <NuxtLink :to="`/invoices/${invoice.id}`" class="hover:underline" @click.stop>{{ invoice.number }}</NuxtLink>
             </td>
-            <td>{{ invoice.clientName }}</td>
+            <td class="min-w-44">{{ invoice.clientName }}</td>
             <td class="max-w-80 truncate" :title="invoice.title">{{ invoice.title }}</td>
             <td class="whitespace-nowrap">{{ formatDateCh(invoice.issueDate) }}</td>
             <td class="whitespace-nowrap">{{ formatDateCh(invoice.dueDate) }}</td>

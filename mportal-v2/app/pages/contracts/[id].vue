@@ -141,7 +141,7 @@ async function removeFile() {
           <span class="text-muted">Abonnement :</span>
           <NuxtLink :to="`/subscriptions/${data.subscription.id}`" class="link">{{ data.subscription.name }}</NuxtLink>
         </p>
-        <p v-if="contract.notes" class="whitespace-pre-line text-muted">{{ contract.notes }}</p>
+        <p v-if="contract.notes" class="whitespace-pre-line break-all text-muted">{{ contract.notes }}</p>
         <div class="border-t border-line pt-3">
           <p class="mb-2 text-muted">Document du contrat</p>
           <div v-if="contract.fileName" class="flex flex-wrap items-center gap-2">
