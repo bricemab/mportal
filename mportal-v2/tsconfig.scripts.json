@@ -1,0 +1,6 @@
+{
+  "extends": "./.nuxt/tsconfig.server.json",
+  "compilerOptions": { "noEmit": true },
+  "include": ["scripts/**/*.ts", "tests/**/*.ts"],
+  "exclude": []
+}

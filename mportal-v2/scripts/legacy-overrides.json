@@ -1,0 +1,31 @@
+{
+  "$comment": "Décisions métier appliquées lors de la migration (identifiants de l'ancienne base). Validées avec Brice le 25.10.2026.",
+  "mdevClientId": 1,
+  "subscriptions": {
+    "endedClients": {
+      "12": { "endDate": "2026-07-10", "reason": "Client terminé (plus de nom de domaine)" }
+    },
+    "endDates": {
+      "4": { "endDate": "2026-12-31", "reason": "Départ du client : payé jusqu'à la fin de l'année" }
+    },
+    "replace": {
+      "14": {
+        "name": "Domaines maison1815.ch & reviu.ch",
+        "nextBillingDate": "2026-10-31",
+        "startDate": "2025-10-31",
+        "notes": "Deux domaines, hébergement non géré par MDevelopment. Avant 2026, le domaine maison1815.ch était facturé à Maxime Burri : vérifier le client de facturation et le prix de reviu.ch.",
+        "lines": [
+          { "serviceName": "Nom de domaine", "label": "maison1815.ch", "quantity": 1, "unitPriceCents": 1500, "unitCostCents": 1070 },
+          { "serviceName": "Nom de domaine", "label": "reviu.ch", "quantity": 1, "unitPriceCents": 1500, "unitCostCents": 1070 }
+        ]
+      }
+    },
+    "excludeInvoiceIdsFromInference": [],
+    "anchorServiceName": "Nom de domaine"
+  },
+  "contracts": {
+    "endDates": {
+      "4": { "endDate": "2026-12-31", "reason": "Départ du client" }
+    }
+  }
+}

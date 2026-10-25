@@ -1,0 +1,29 @@
+# Nuxt
+.output
+.data
+.nuxt
+.nitro
+.cache
+dist
+node_modules
+.vitest
+
+# Secrets et données
+.env
+.env.*
+!.env.example
+storage/
+*.sql
+*.sql.gz
+*.pdf
+*.xml
+!server/**/*.xml
+
+# Divers
+logs
+*.log
+.DS_Store
+.idea
+.vscode/*
+!.vscode/extensions.json
+*.tmp.*

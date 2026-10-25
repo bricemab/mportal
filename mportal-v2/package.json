@@ -1,0 +1,53 @@
+{
+  "name": "mportal-v2",
+  "private": true,
+  "type": "module",
+  "version": "2.0.0",
+  "engines": {
+    "node": ">=20.19"
+  },
+  "scripts": {
+    "dev": "nuxt dev",
+    "build": "nuxt build",
+    "start": "node --env-file=.env .output/server/index.mjs",
+    "preview": "node --env-file=.env .output/server/index.mjs",
+    "postinstall": "nuxt prepare",
+    "typecheck": "nuxt typecheck && tsc -p tsconfig.scripts.json",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "tsx scripts/migrate.ts",
+    "user:create": "tsx scripts/create-user.ts",
+    "legacy:migrate": "tsx scripts/migrate-legacy.ts"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.3.3",
+    "bcryptjs": "^3.0.3",
+    "chart.js": "^4.6.1",
+    "dotenv": "^18.0.9",
+    "drizzle-orm": "^0.45.4",
+    "fast-xml-parser": "^5.11.2",
+    "lucide-vue-next": "^1.0.0",
+    "mysql2": "^3.24.6",
+    "nuxt": "^4.6.2",
+    "nuxt-auth-utils": "^0.5.32",
+    "nuxt-security": "^2.7.0",
+    "pdfkit": "^0.20.2",
+    "swissqrbill": "^4.4.3",
+    "tailwindcss": "^4.3.3",
+    "tsx": "^4.23.15",
+    "unpdf": "^1.9.1",
+    "vue": "^3.5.44",
+    "vue-chartjs": "^5.3.4",
+    "vue-router": "^5.4.0",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "@types/pdfkit": "^0.17.7",
+    "drizzle-kit": "^0.31.11",
+    "typescript": "~5.9",
+    "vitest": "^5.0.5",
+    "vue-tsc": "^3.3.13"
+  }
+}
