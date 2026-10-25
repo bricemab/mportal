@@ -2,12 +2,12 @@ import {
   bigint,
   boolean,
   char,
+  customType,
   date,
   datetime,
   decimal,
   index,
   int,
-  json,
   longtext,
   mysqlEnum,
   mysqlTable,
@@ -24,6 +24,16 @@ import {
  */
 
 const now = () => new Date()
+
+/**
+ * JSON compatible MariaDB : le type JSON y est un LONGTEXT, renvoyé sous forme de chaîne
+ * (MySQL 8 renvoie un objet). On normalise dans les deux sens.
+ */
+const jsonObject = customType<{ data: Record<string, unknown>; driverData: string | Record<string, unknown> }>({
+  dataType: () => 'json',
+  toDriver: (value) => JSON.stringify(value),
+  fromDriver: (value) => (typeof value === 'string' ? (JSON.parse(value) as Record<string, unknown>) : value),
+})
 
 const timestamps = {
   createdAt: datetime('created_at', { mode: 'date' }).notNull().$defaultFn(now),
@@ -75,7 +85,7 @@ export const auditLogs = mysqlTable(
     action: varchar('action', { length: 64 }).notNull(),
     entity: varchar('entity', { length: 64 }).notNull(),
     entityId: int('entity_id'),
-    changes: json('changes').$type<Record<string, unknown>>(),
+    changes: jsonObject('changes'),
     ip: varchar('ip', { length: 64 }),
     createdAt: datetime('created_at', { mode: 'date' }).notNull().$defaultFn(now),
   },

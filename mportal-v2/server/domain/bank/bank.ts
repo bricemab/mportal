@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto'
 import { and, asc, desc, eq, gte, inArray, isNull, lte, sql, type SQL } from 'drizzle-orm'
 import type { Db, DbOrTx } from '../../db/client'
 import { bankImports, bankTransactions, clients, expenses, invoices, payments, users } from '../../db/schema'
-import { addDays, diffDays } from '../../../shared/utils/dates'
+import { addDays, diffDays, formatDateCh } from '../../../shared/utils/dates'
 import { remainingCents } from '../../../shared/utils/invoice-status'
 import { audit, type Actor } from '../audit'
 import { badRequest, conflict, notFound } from '../errors'
@@ -86,9 +86,11 @@ export async function importStatement(db: Db, actor: Actor, fileName: string, co
         if (!previous.qrReference && t.qrReference) patch.qrReference = t.qrReference
         if (!previous.counterparty && t.counterparty) patch.counterparty = t.counterparty
         if (!previous.counterpartyIban && t.counterpartyIban) patch.counterpartyIban = t.counterpartyIban
+        const meaningful = Object.keys(patch).length > 0
         if (!previous.valueDate && t.valueDate) patch.valueDate = t.valueDate
-        if (Object.keys(patch).length > 0) {
-          await tx.update(bankTransactions).set(patch).where(eq(bankTransactions.id, previous.id))
+        if (Object.keys(patch).length > 0) await tx.update(bankTransactions).set(patch).where(eq(bankTransactions.id, previous.id))
+        // Seules une référence, une contrepartie ou un IBAN nouveaux comptent et relancent le rapprochement
+        if (meaningful) {
           enrichedCount++
           if (previous.status === 'PENDING') ids.push(previous.id)
         }
@@ -183,7 +185,7 @@ export async function autoMatchTransaction(db: Db, actor: Actor, id: number): Pr
             await addPayment(tx, actor, invoice.id, {
               amountCents: t.amountCents,
               paidAt: t.bookingDate,
-              note: `Relevé bancaire du ${t.bookingDate}`,
+              note: `Relevé bancaire du ${formatDateCh(t.bookingDate)}`,
               bankTransactionId: t.id,
             })
             await markMatched(tx, actor, t.id, 'INVOICE_PAYMENT')
@@ -309,8 +311,15 @@ async function suggestionsFor(db: DbOrTx, t: BankTransactionRow) {
   const nearby = await db
     .select({ id: expenses.id, label: expenses.label, date: expenses.date, amountCents: expenses.amountCents })
     .from(expenses)
-    .where(and(isNull(expenses.bankTransactionId), eq(expenses.amountCents, t.amountCents)))
-    .orderBy(desc(expenses.date))
+    .where(
+      and(
+        isNull(expenses.bankTransactionId),
+        eq(expenses.amountCents, t.amountCents),
+        gte(expenses.date, addDays(t.bookingDate, -120)),
+        lte(expenses.date, addDays(t.bookingDate, 30)),
+      ),
+    )
+    .orderBy(sql`ABS(DATEDIFF(${expenses.date}, ${t.bookingDate}))`)
     .limit(5)
   return { invoices: [], expenses: nearby, category: guessExpenseCategory(`${t.counterparty ?? ''} ${t.description ?? ''}`) }
 }
@@ -332,7 +341,7 @@ export async function matchTransactionToInvoice(tx: DbOrTx, actor: Actor, id: nu
   if (existingPayment) {
     await tx.update(payments).set({ bankTransactionId: id }).where(eq(payments.id, existingPayment.id))
   } else {
-    await addPayment(tx, actor, invoiceId, { amountCents: t.amountCents, paidAt: t.bookingDate, note: `Relevé bancaire du ${t.bookingDate}`, bankTransactionId: id })
+    await addPayment(tx, actor, invoiceId, { amountCents: t.amountCents, paidAt: t.bookingDate, note: `Relevé bancaire du ${formatDateCh(t.bookingDate)}`, bankTransactionId: id })
   }
   await markMatched(tx, actor, id, 'INVOICE_PAYMENT')
   await audit(tx, actor, 'match_invoice', 'bank_transaction', id, { invoiceId })

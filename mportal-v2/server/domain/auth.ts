@@ -104,6 +104,15 @@ export async function getSessionVersion(db: DbOrTx, userId: number): Promise<num
   return row?.v ?? null
 }
 
+/**
+ * Une session n'est valide que si l'utilisateur existe toujours avec le même email et la même version :
+ * un identifiant réattribué (base recréée) ou un mot de passe changé invalide la session.
+ */
+export async function isSessionValid(db: DbOrTx, session: { id: number; email: string; version: number }): Promise<boolean> {
+  const [row] = await db.select({ v: users.sessionVersion, email: users.email }).from(users).where(eq(users.id, session.id)).limit(1)
+  return Boolean(row && row.v === session.version && row.email === session.email)
+}
+
 /** Purge des tentatives de connexion de plus de 90 jours. */
 export async function purgeLoginAttempts(db: DbOrTx, now: Date = new Date()): Promise<void> {
   const limit = new Date(now.getTime() - 90 * 86_400_000)

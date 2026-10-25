@@ -1,5 +1,5 @@
 import { getHeader, getRequestHost } from 'h3'
-import { getSessionVersion } from '../domain/auth'
+import { isSessionValid } from '../domain/auth'
 import { forbidden, unauthorized } from '../domain/errors'
 
 const PUBLIC_API = new Set(['/api/auth/login', '/api/health', '/api/_auth/session'])
@@ -33,6 +33,15 @@ export default defineEventHandler(async (event) => {
     }
   }
 
+  if (path === '/api/_auth/session' && event.method === 'GET') {
+    // Lecture de session par l'application : une session révoquée est effacée avant d'être renvoyée
+    const current = await getUserSession(event)
+    const v = current.secure?.sessionVersion
+    if (current.user && !(typeof v === 'number' && (await isSessionValid(useDb(), { id: current.user.id, email: current.user.email, version: v })))) {
+      await clearUserSession(event)
+    }
+    return
+  }
   if (PUBLIC_API.has(path)) return
 
   const session = await getUserSession(event)
@@ -40,8 +49,7 @@ export default defineEventHandler(async (event) => {
   const version = session.secure?.sessionVersion
   if (!user || typeof version !== 'number') throw unauthorized()
 
-  const current = await getSessionVersion(useDb(), user.id)
-  if (current === null || current !== version) {
+  if (!(await isSessionValid(useDb(), { id: user.id, email: user.email, version }))) {
     await clearUserSession(event)
     throw unauthorized('Session expirée, reconnectez-vous')
   }

@@ -13,7 +13,7 @@ import {
   subscriptions,
   users,
 } from '../db/schema'
-import { addDays, todayIso } from '../../shared/utils/dates'
+import { addDays, formatDateCh, todayIso } from '../../shared/utils/dates'
 import { displayStatus, isInvoiceEditable, remainingCents, type InvoiceDisplayStatus } from '../../shared/utils/invoice-status'
 import { lineTotalCents, sumLinesCents, formatChf } from '../../shared/utils/money'
 import { qrReferenceFromNumber } from '../../shared/utils/qr-reference'
@@ -152,7 +152,7 @@ export async function issueInvoice(tx: DbOrTx, actor: Actor, id: number, today: 
       dueDate: invoice.dueDate ?? addDays(issueDate, dueDays),
     })
     .where(eq(invoices.id, id))
-  await addInvoiceEvent(tx, id, 'ISSUED', `Facture émise le ${issueDate}`, actor.userId)
+  await addInvoiceEvent(tx, id, 'ISSUED', `Facture émise le ${formatDateCh(issueDate)}`, actor.userId)
   await audit(tx, actor, 'issue', 'invoice', id)
   return getInvoice(tx, id)
 }
@@ -204,7 +204,7 @@ export async function addPayment(
     tx,
     invoiceId,
     full ? 'PAID' : 'PAYMENT',
-    `${full ? 'Payée' : 'Paiement partiel'} : ${formatChf(input.amountCents)} le ${input.paidAt}${input.bankTransactionId ? ' (relevé bancaire)' : ''}`,
+    `${full ? 'Payée' : 'Paiement partiel'} : ${formatChf(input.amountCents)} le ${formatDateCh(input.paidAt)}${input.bankTransactionId ? ' (relevé bancaire)' : ''}`,
     actor.userId,
   )
   await audit(tx, actor, 'payment', 'invoice', invoiceId, { amountCents: input.amountCents, paidAt: input.paidAt })
@@ -241,6 +241,7 @@ export async function writeOffInvoice(tx: DbOrTx, actor: Actor, id: number, reas
   if (remaining <= 0) throw conflict('Rien à solder : la facture est entièrement payée')
   await tx.update(invoices).set({ status: 'WRITTEN_OFF', writtenOffAt: new Date(), writeOffReason: reason }).where(eq(invoices.id, id))
   await addInvoiceEvent(tx, id, 'WRITTEN_OFF', `Soldée (${formatChf(remaining)} abandonnés) : ${reason}`, actor.userId)
+  // Le montant abandonné n'est pas encaissé : il ne compte pas dans le chiffre d'affaires facturé
   await audit(tx, actor, 'write_off', 'invoice', id, { remaining, reason })
   return getInvoice(tx, id)
 }
