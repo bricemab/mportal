@@ -14,8 +14,9 @@ const jwtExpiresIn = env("MPORTAL_JWT_EXPIRES_IN", "1d");
 const config = {
   isDevModeEnabled: process.env.NODE_ENV !== "production",
   server: {
-    host: env("HOST", "127.0.0.1"),
-    port: Number(env("PORT", "4370")),
+    // Noms propres à MPortal : Coolify injecte ses propres HOST/PORT dans les conteneurs.
+    host: env("MPORTAL_LISTEN_HOST", "127.0.0.1"),
+    port: Number(env("MPORTAL_LISTEN_PORT", "4370")),
   },
   database: {
     host: env("MPORTAL_DB_HOST", "127.0.0.1"),
