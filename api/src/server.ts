@@ -14,7 +14,7 @@ import xss from "xss-clean";
 import helmet from "helmet";
 import authRouter from "./routes/AuthRouter";
 import AuthMiddleware from "./middlewares/AuthMiddleware";
-import { initializeDatabase } from "./database";
+import { AppDataSource, initializeDatabase } from "./database";
 import clientRouter from "./routes/ClientRouter";
 import serviceRouter from "./routes/ServiceRouter";
 import invoiceRouter from "./routes/InvoiceRouter";
@@ -67,12 +67,22 @@ setup()
 
     const server = http.createServer(app);
 
-    server.listen(config.server.port, "0.0.0.0", () => {
-      const protocol = config.isDevModeEnabled ? "http" : "http";
+    server.listen(config.server.port, config.server.host, () => {
       Logger.info(
-        `API is now running on ${protocol}://${config.server.host}:${config.server.port}`,
+        `API is now running on http://${config.server.host}:${config.server.port}`,
       );
     });
+
+    // Arrêt propre (déploiement Coolify, redémarrage du serveur) : < 5 s.
+    const shutdown = (signal: string) => {
+      Logger.info(`${signal} reçu, arrêt de l'API`);
+      server.close(() => {
+        AppDataSource.destroy().finally(() => process.exit(0));
+      });
+      setTimeout(() => process.exit(0), 4000).unref();
+    };
+    process.on("SIGTERM", () => shutdown("SIGTERM"));
+    process.on("SIGINT", () => shutdown("SIGINT"));
 
     app.on("error", (error: any) => {
       Utils.manageError({
@@ -84,4 +94,6 @@ setup()
   .catch((error) => {
     Logger.warn(`Setup finish with errors`);
     Utils.manageError(error);
+    // Sortir pour que Docker relance le conteneur (base pas encore prête, etc.).
+    setTimeout(() => process.exit(1), 1000);
   });

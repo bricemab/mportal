@@ -1,0 +1,49 @@
+# MPortal V1 sur le serveur maison (Coolify).
+# API : 127.0.0.1:4370 (tunnel Cloudflare -> mportal-api.bricemab.ch)
+# MariaDB : 127.0.0.1:3307, données dans /var/lib/mportal/mariadb
+# Secrets : /etc/mportal/api.env (API) et /etc/mportal/db.password (MariaDB),
+# jamais dans le dépôt ni dans Coolify.
+services:
+  db:
+    image: mariadb:10.6
+    network_mode: host
+    restart: unless-stopped
+    command:
+      - --bind-address=127.0.0.1
+      - --port=3307
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    environment:
+      MARIADB_DATABASE: mportal
+      MARIADB_USER: mportal
+      MARIADB_PASSWORD_FILE: /run/secrets/db.password
+      MARIADB_RANDOM_ROOT_PASSWORD: "1"
+    volumes:
+      - /var/lib/mportal/mariadb:/var/lib/mysql
+      - /etc/mportal/db.password:/run/secrets/db.password:ro
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    logging:
+      driver: json-file
+      options:
+        max-size: 5m
+        max-file: "2"
+
+  api:
+    build:
+      context: ./api
+    network_mode: host
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - /etc/mportal/api.env:/run/secrets/api.env:ro
+    logging:
+      driver: json-file
+      options:
+        max-size: 5m
+        max-file: "2"
